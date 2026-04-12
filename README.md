@@ -25,8 +25,11 @@ A full-stack phishing URL detection platform with real-time threat analysis, rol
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) v18 or higher
-- [MongoDB](https://www.mongodb.com/try/download/community) running locally (or a MongoDB Atlas URI)
+Install these before starting:
+
+- [Git](https://git-scm.com/downloads)
+- [Node.js v18+](https://nodejs.org) — download the LTS version
+- [MongoDB Community](https://www.mongodb.com/try/download/community) — make sure it is running
 
 ---
 
@@ -34,20 +37,20 @@ A full-stack phishing URL detection platform with real-time threat analysis, rol
 
 ### 1. Clone the repository
 
-```bash
+```
 git clone https://github.com/maxamud123/phishing-detection-system.git
 cd phishing-detection-system
 ```
 
 ### 2. Install frontend dependencies
 
-```bash
+```
 npm install
 ```
 
 ### 3. Install backend dependencies
 
-```bash
+```
 cd server
 npm install
 cd ..
@@ -55,36 +58,46 @@ cd ..
 
 ### 4. Configure environment variables
 
-```bash
+**Windows (Command Prompt):**
+```
+copy server\.env.example server\.env
+```
+
+**Mac / Linux:**
+```
 cp server/.env.example server/.env
 ```
 
-Open `server/.env` and fill in your values. At minimum MongoDB must be running — all other values are optional.
+Open `server/.env` in any text editor. MongoDB must be running — all other values are optional.
 
 ### 5. Run the backend
 
-```bash
+Open a terminal, go into the server folder, and start it:
+
+```
 cd server
 node index.js
 ```
 
-Backend starts on `http://localhost:3001`
+Backend runs on `http://localhost:3001`
 
-### 6. Run the frontend (new terminal)
+### 6. Run the frontend
 
-```bash
+Open a **second terminal** in the project root and run:
+
+```
 npm run dev
 ```
 
-Frontend starts on `http://localhost:5173`
+Frontend runs on `http://localhost:5173`
 
 ---
 
 ## First-Time Login
 
-On first run the database is empty. Go to `http://localhost:5173` and click **Create Account**.
+On first run the database is empty. Open `http://localhost:5173` and click **Create Account**.
 
-The **first account** registered is automatically assigned the **Admin** role. All subsequent accounts register as Analyst by default.
+The **first account** created is automatically assigned the **Admin** role. All accounts after that register as Analyst by default.
 
 ---
 
@@ -92,10 +105,10 @@ The **first account** registered is automatically assigned the **Admin** role. A
 
 The system works without API keys using built-in heuristic detection. To enable deeper scanning:
 
-- **VirusTotal** — get a free key at [virustotal.com](https://www.virustotal.com/gui/my-apikey)
+- **VirusTotal** — free key at [virustotal.com](https://www.virustotal.com/gui/my-apikey)
 - **Google Safe Browsing** — enable the API in [Google Cloud Console](https://console.cloud.google.com)
 
-Add both keys to `server/.env`.
+Add both to `server/.env`.
 
 ---
 
