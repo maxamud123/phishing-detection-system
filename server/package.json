@@ -1,0 +1,19 @@
+{
+  "name": "phish-guard-server",
+  "version": "1.0.0",
+  "description": "Phishing Detection System — MongoDB Backend",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "dev":   "node index.js"
+  },
+  "dependencies": {
+    "mongodb":    "^6.3.0",
+    "ws":         "^8.18.0",
+    "nodemailer": "^6.9.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
