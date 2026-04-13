@@ -27,13 +27,26 @@ export function isLoggedIn(): boolean {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export interface User {
+  userId:     string;
+  name:       string;
+  email:      string;
+  role:       'Admin' | 'User';
+  disabled?:  boolean;
+  createdAt?: string;
+  lastLogin?: string;
+  loginCount?: number;
+}
+
+export interface ActiveSession {
+  _id:       string;
   userId:    string;
   name:      string;
   email:     string;
-  role:      'Admin' | 'User';
-  disabled?: boolean;
-  createdAt?: string;
-  lastLogin?: string;
+  role:      string;
+  ipAddress: string;
+  userAgent: string;
+  createdAt: string;
+  expiresAt: string;
 }
 
 export interface Report {
@@ -67,6 +80,8 @@ export interface AuditLog {
   userId:    string;
   userName:  string;
   details:   string;
+  ip?:       string | null;
+  resource?: string | null;
   timestamp: string;
 }
 
@@ -135,7 +150,7 @@ export const UsersAPI = {
   update:       (id: string, u: Partial<User> & { password?: string }) => apiFetch<{ user: User }>(`/api/users/${id}`, 'PUT', u),
   delete:       (id: string) => apiFetch(`/api/users/${id}`, 'DELETE'),
   toggleStatus: (id: string, disabled: boolean) => apiFetch<{ user: User }>(`/api/users/${id}/status`, 'PUT', { disabled }),
-  resetPassword:(id: string, password: string) => apiFetch(`/api/users/${id}`, 'PUT', { password }),
+  resetPassword:(id: string, password: string) => apiFetch(`/api/users/${id}/reset-password`, 'PUT', { password }),
 };
 
 // ── Reports API ───────────────────────────────────────────────────────────────
@@ -187,6 +202,12 @@ export const ScansAPI = {
 export const AdminAPI = {
   auditLogs: () => apiFetch<{ data: AuditLog[] }>('/api/audit-logs'),
   dbStats:   () => apiFetch<{ connected: boolean; dbName: string; collections: Record<string, number> }>('/api/db-stats'),
+};
+
+// ── Sessions API ──────────────────────────────────────────────────────────────
+export const SessionsAPI = {
+  getAll: () => apiFetch<{ data: ActiveSession[] }>('/api/sessions'),
+  kill:   (id: string) => apiFetch(`/api/sessions/${id}`, 'DELETE'),
 };
 
 // ── CSV export helper ─────────────────────────────────────────────────────────
