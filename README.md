@@ -18,8 +18,7 @@ A full-stack phishing URL detection platform with real-time threat analysis, rol
 | Role | Capabilities |
 |------|-------------|
 | **Admin** | Full access — manage users, view audit logs, all features |
-| **Analyst** | Scan URLs, view reports, view analytics |
-| **Viewer** | View scans and reports (read-only) |
+| **User** | Scan URLs, submit and manage reports, view analytics |
 
 ---
 
@@ -97,7 +96,7 @@ Frontend runs on `http://localhost:5173`
 
 On first run the database is empty. Open `http://localhost:5173` and click **Create Account**.
 
-The **first account** created is automatically assigned the **Admin** role. All accounts after that register as Analyst by default.
+The **first account** created is automatically assigned the **Admin** role. All accounts after that register as User by default.
 
 ---
 

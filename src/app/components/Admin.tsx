@@ -19,14 +19,14 @@ const inputStyle: React.CSSProperties = {
 };
 
 const permissions = [
-  { label: 'View Dashboard',   admin: true,  analyst: true,  viewer: true  },
-  { label: 'Run Scans',        admin: true,  analyst: true,  viewer: true  },
-  { label: 'Submit Reports',   admin: true,  analyst: true,  viewer: false },
-  { label: 'Manage Reports',   admin: true,  analyst: true,  viewer: false },
-  { label: 'View Analytics',   admin: true,  analyst: true,  viewer: false },
-  { label: 'Manage Users',     admin: true,  analyst: false, viewer: false },
-  { label: 'System Config',    admin: true,  analyst: false, viewer: false },
-  { label: 'Access Admin Panel', admin: true, analyst: false, viewer: false },
+  { label: 'View Dashboard',     admin: true,  user: true  },
+  { label: 'Run Scans',          admin: true,  user: true  },
+  { label: 'Submit Reports',     admin: true,  user: true  },
+  { label: 'Manage Reports',     admin: true,  user: true  },
+  { label: 'View Analytics',     admin: true,  user: true  },
+  { label: 'Manage Users',       admin: true,  user: false },
+  { label: 'System Config',      admin: true,  user: false },
+  { label: 'Access Admin Panel', admin: true,  user: false },
 ];
 
 interface DbStats {
@@ -50,7 +50,7 @@ export function Admin() {
   const [formName, setFormName]       = useState('');
   const [formEmail, setFormEmail]     = useState('');
   const [formPassword, setFormPassword] = useState('');
-  const [formRole, setFormRole]       = useState<User['role']>('Viewer');
+  const [formRole, setFormRole]       = useState<User['role']>('User');
   const [submitting, setSubmitting]   = useState(false);
   const [formError, setFormError]     = useState('');
 
@@ -108,7 +108,7 @@ export function Admin() {
       if (data.success && data.user) {
         setUsers(prev => [...prev, data.user]);
         setShowUserForm(false);
-        setFormName(''); setFormEmail(''); setFormPassword(''); setFormRole('Viewer');
+        setFormName(''); setFormEmail(''); setFormPassword(''); setFormRole('User');
       } else {
         setFormError(data.error || 'Failed to create user.');
       }
@@ -121,9 +121,8 @@ export function Admin() {
 
   const getRoleStyle = (role: string) => {
     switch (role) {
-      case 'Admin':   return { color: '#a78bfa', backgroundColor: 'rgba(167, 139, 250, 0.12)', border: '1px solid rgba(167, 139, 250, 0.3)' };
-      case 'Analyst': return { color: '#00d4ff', backgroundColor: 'rgba(0, 212, 255, 0.12)', border: '1px solid rgba(0, 212, 255, 0.3)' };
-      default:        return { color: '#94a3b8', backgroundColor: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.2)' };
+      case 'Admin': return { color: '#a78bfa', backgroundColor: 'rgba(167, 139, 250, 0.12)', border: '1px solid rgba(167, 139, 250, 0.3)' };
+      default:      return { color: '#00d4ff', backgroundColor: 'rgba(0, 212, 255, 0.12)', border: '1px solid rgba(0, 212, 255, 0.3)' };
     }
   };
 
@@ -392,7 +391,7 @@ export function Admin() {
               <thead>
                 <tr style={{ borderBottom: '1px solid #1a2040' }}>
                   <th className="text-left py-2 px-2" style={{ fontSize: '11px', color: '#4a6080', fontWeight: 600, width: '50%' }}>Permission</th>
-                  {[{ label: 'Admin', color: '#a78bfa' }, { label: 'Analyst', color: '#00d4ff' }, { label: 'Viewer', color: '#94a3b8' }].map(({ label, color }) => (
+                  {[{ label: 'Admin', color: '#a78bfa' }, { label: 'User', color: '#00d4ff' }].map(({ label, color }) => (
                     <th key={label} className="text-center py-2 px-2" style={{ fontSize: '11px', color, fontWeight: 600 }}>{label}</th>
                   ))}
                 </tr>
@@ -403,7 +402,7 @@ export function Admin() {
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)')}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}>
                     <td className="py-2 px-2" style={{ fontSize: '12px', color: '#94a3b8' }}>{p.label}</td>
-                    {[p.admin, p.analyst, p.viewer].map((allowed, j) => (
+                    {[p.admin, p.user].map((allowed, j) => (
                       <td key={j} className="py-2 px-2 text-center">
                         {allowed ? (
                           <div className="inline-flex items-center justify-center w-5 h-5 rounded-full" style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)' }}>
@@ -456,8 +455,7 @@ export function Admin() {
                 <label style={{ fontSize: '12px', color: '#6b7f9e', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Role</label>
                 <select aria-label="Role" value={formRole} onChange={e => setFormRole(e.target.value as User['role'])} style={{ ...inputStyle, width: '100%', cursor: 'pointer' }}>
                   <option>Admin</option>
-                  <option>Analyst</option>
-                  <option>Viewer</option>
+                  <option>User</option>
                 </select>
               </div>
               <div className="flex gap-3 pt-2">

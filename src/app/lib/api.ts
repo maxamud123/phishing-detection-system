@@ -30,7 +30,7 @@ export interface User {
   userId: string;
   name:   string;
   email:  string;
-  role:   'Admin' | 'Analyst' | 'Viewer';
+  role:   'Admin' | 'User';
   createdAt?: string;
   lastLogin?: string;
 }
