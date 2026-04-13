@@ -42,12 +42,12 @@ interface SearchResult {
 // ── Static data ────────────────────────────────────────────────────────────
 
 const allNavItems = [
-  { id: 'dashboard'     as Tab, label: 'Dashboard',      icon: LayoutDashboard, roles: ['Admin','Analyst','Viewer'] },
-  { id: 'scanner'       as Tab, label: 'Threat Scanner',  icon: ScanLine,        roles: ['Admin','Analyst','Viewer'] },
-  { id: 'reports'       as Tab, label: 'Reports',         icon: FileText,        roles: ['Admin','Analyst','Viewer'] },
-  { id: 'scanhistory'   as Tab, label: 'Scan History',    icon: History,         roles: ['Admin','Analyst','Viewer'] },
-  { id: 'analytics'     as Tab, label: 'Analytics',       icon: BarChart2,       roles: ['Admin','Analyst','Viewer'] },
-  { id: 'knowledgebase' as Tab, label: 'Knowledge Base',  icon: BookOpen,        roles: ['Admin','Analyst','Viewer'] },
+  { id: 'dashboard'     as Tab, label: 'Dashboard',      icon: LayoutDashboard, roles: ['Admin','User'] },
+  { id: 'scanner'       as Tab, label: 'Threat Scanner',  icon: ScanLine,        roles: ['Admin','User'] },
+  { id: 'reports'       as Tab, label: 'Reports',         icon: FileText,        roles: ['Admin','User'] },
+  { id: 'scanhistory'   as Tab, label: 'Scan History',    icon: History,         roles: ['Admin','User'] },
+  { id: 'analytics'     as Tab, label: 'Analytics',       icon: BarChart2,       roles: ['Admin','User'] },
+  { id: 'knowledgebase' as Tab, label: 'Knowledge Base',  icon: BookOpen,        roles: ['Admin','User'] },
   { id: 'admin'         as Tab, label: 'Admin',           icon: Settings,        roles: ['Admin'] },
 ];
 
@@ -595,8 +595,8 @@ export default function App() {
               <span
                 className="hidden md:block px-1.5 py-0.5 rounded text-xs font-semibold"
                 style={{
-                  color: currentUser?.role === 'Admin' ? '#a78bfa' : currentUser?.role === 'Analyst' ? '#00d4ff' : '#94a3b8',
-                  backgroundColor: currentUser?.role === 'Admin' ? 'rgba(167,139,250,0.1)' : currentUser?.role === 'Analyst' ? 'rgba(0,212,255,0.1)' : 'rgba(148,163,184,0.1)',
+                  color: currentUser?.role === 'Admin' ? '#a78bfa' : '#00d4ff',
+                  backgroundColor: currentUser?.role === 'Admin' ? 'rgba(167,139,250,0.1)' : 'rgba(0,212,255,0.1)',
                 }}>
                 {currentUser?.role}
               </span>

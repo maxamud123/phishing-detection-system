@@ -9,13 +9,12 @@ interface SignupProps {
 }
 
 const ROLES = [
-  { value: 'Admin',   label: 'Admin',   desc: 'Full access — manage users, reports, settings', color: '#a78bfa', bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.25)' },
-  { value: 'Analyst', label: 'Analyst', desc: 'Can scan, file and edit reports',                 color: '#00d4ff', bg: 'rgba(0,212,255,0.08)',   border: 'rgba(0,212,255,0.25)'   },
-  { value: 'Viewer',  label: 'Viewer',  desc: 'Read-only access to dashboard and reports',       color: '#94a3b8', bg: 'rgba(148,163,184,0.08)', border: 'rgba(148,163,184,0.2)'  },
+  { value: 'Admin', label: 'Admin', desc: 'Full access — manage users, reports, settings', color: '#a78bfa', bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.25)' },
+  { value: 'User',  label: 'User',  desc: 'Scan URLs, submit and manage reports',          color: '#00d4ff', bg: 'rgba(0,212,255,0.08)',   border: 'rgba(0,212,255,0.25)'   },
 ];
 
 export function Signup({ onSuccess, onBackToLogin, isAdminCreating = false }: SignupProps) {
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'Analyst' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'User' });
   const [showPwd, setShowPwd]   = useState(false);
   const [showCfm, setShowCfm]   = useState(false);
   const [focused, setFocused]   = useState<string | null>(null);

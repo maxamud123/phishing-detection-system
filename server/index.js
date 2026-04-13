@@ -274,7 +274,7 @@ async function authSignup(req, res) {
       if (!actor) return;
       if (actor.role !== 'Admin') return jsonError(res, 403, 'Only Admins can create new accounts.');
     }
-    // No token — public self-signup allowed, but role is capped at Analyst/Viewer
+    // No token — public self-signup allowed, role is always 'User'
   }
 
   const exists = await col.findOne({ email: email.toLowerCase().trim() });
@@ -283,8 +283,8 @@ async function authSignup(req, res) {
   const assignedRole = count === 0
     ? 'Admin'
     : actor
-      ? (['Admin','Analyst','Viewer'].includes(role) ? role : 'Viewer')   // Admin can assign any role
-      : (['Analyst','Viewer'].includes(role) ? role : 'Analyst');          // Public signup: Analyst or Viewer only
+      ? (['Admin','User'].includes(role) ? role : 'User')   // Admin can assign any role
+      : 'User';                                              // Public signup always gets User
 
   const salt         = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPwd(password, salt);
@@ -354,7 +354,7 @@ async function createUser(req, res) {
   const salt         = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPwd(password, salt);
   const userId       = genUserId();
-  const assignedRole = ['Admin','Analyst','Viewer'].includes(role) ? role : 'Viewer';
+  const assignedRole = ['Admin','User'].includes(role) ? role : 'User';
 
   const newUser = { userId, name: name.trim(), email: email.toLowerCase(),
     passwordHash, salt, role: assignedRole, createdAt: new Date() };
@@ -376,7 +376,7 @@ async function updateUser(req, res, userId) {
   const update = { updatedAt: new Date() };
   if (body.name)  update.name  = body.name.trim();
   if (body.email) update.email = body.email.toLowerCase().trim();
-  if (body.role && ['Admin','Analyst','Viewer'].includes(body.role)) update.role = body.role;
+  if (body.role && ['Admin','User'].includes(body.role)) update.role = body.role;
   if (body.password) {
     update.salt         = crypto.randomBytes(16).toString('hex');
     update.passwordHash = hashPwd(body.password, update.salt);
@@ -467,8 +467,6 @@ async function deleteReport(req, res, reportId) {
   if (!db) return noDb(res);
   const user = await requireAuth(req, res);
   if (!user) return;
-  if (user.role === 'Viewer') return jsonError(res, 403, 'Insufficient permissions.');
-
   const result = await db.collection('reports').deleteOne({ id: reportId });
   if (result.deletedCount === 0) return jsonError(res, 404, 'Report not found.');
   await audit('DELETE_REPORT', user, `Deleted ${reportId}`);
@@ -484,7 +482,6 @@ async function deleteScan(req, res, scanId) {
   if (!db) return noDb(res);
   const user = await requireAuth(req, res);
   if (!user) return;
-  if (user.role === 'Viewer') return jsonError(res, 403, 'Insufficient permissions.');
   const result = await db.collection('scans').deleteOne({ id: scanId });
   if (result.deletedCount === 0) return jsonError(res, 404, 'Scan not found.');
   await audit('DELETE_SCAN', user, `Deleted scan ${scanId}`);
