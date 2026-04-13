@@ -115,9 +115,18 @@ async function connectDB() {
 }
 
 async function setupIndexes() {
+  // Users
   await db.collection('users').createIndex({ email: 1 }, { unique: true });
+  // Sessions — TTL + fast lookups
   await db.collection('sessions').createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
   await db.collection('sessions').createIndex({ token: 1 });
+  await db.collection('sessions').createIndex({ userId: 1, expiresAt: 1 }); // fast "boot all sessions" queries
+  // Scans / reports — fast per-user queries
+  await db.collection('scans').createIndex({ scannedBy: 1, createdAt: -1 });
+  await db.collection('reports').createIndex({ createdBy: 1, createdAt: -1 });
+  // Audit logs — fast per-user + chronological queries
+  await db.collection('audit_logs').createIndex({ userId: 1, timestamp: -1 });
+  await db.collection('audit_logs').createIndex({ timestamp: -1 });
 }
 
 async function seedDefaultData() {
@@ -191,12 +200,12 @@ function noDb(res) {
 }
 
 // ─── Audit Helper ─────────────────────────────────────────────────────────────
-async function audit(action, actor, details) {
+async function audit(action, actor, details, ip = null, resource = null) {
   if (!db) return;
   try {
     await db.collection('audit_logs').insertOne({
       action, userId: actor?.userId || 'SYSTEM', userName: actor?.name || 'System',
-      details, timestamp: new Date(),
+      details, ip, resource, timestamp: new Date(),
     });
   } catch { /* non-critical */ }
 }
@@ -263,13 +272,19 @@ async function authLogin(req, res) {
     return jsonError(res, 401, 'Incorrect password.');
   if (user.disabled) return jsonError(res, 403, 'Your account has been disabled. Contact your administrator.');
 
-  const token = genToken();
+  const token     = genToken();
+  const ipAddress = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress || 'unknown';
+  const userAgent = req.headers['user-agent'] || 'unknown';
   await db.collection('sessions').insertOne({
     token, userId: user.userId, name: user.name, email: user.email, role: user.role,
+    ipAddress, userAgent,
     createdAt: new Date(), expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
   });
-  await db.collection('users').updateOne({ _id: user._id }, { $set: { lastLogin: new Date() } });
-  await audit('LOGIN', { userId: user.userId, name: user.name }, `Logged in`);
+  await db.collection('users').updateOne(
+    { _id: user._id },
+    { $set: { lastLogin: new Date() }, $inc: { loginCount: 1 } }
+  );
+  await audit('LOGIN', { userId: user.userId, name: user.name }, `Logged in from ${ipAddress}`, ipAddress, 'session');
 
   const { passwordHash, salt, _id, ...safe } = user;
   jsonOk(res, { token, user: safe });
@@ -452,6 +467,27 @@ async function deleteUser(req, res, userId) {
   await db.collection('sessions').deleteMany({ userId });
   await audit('DELETE_USER', actor, `Deleted user "${userId}"`);
   jsonOk(res, { message: 'User deleted.' });
+}
+
+// PUT /api/users/:id/reset-password — admin resets another user's password
+async function adminResetPassword(req, res, userId) {
+  if (!db) return noDb(res);
+  const actor = await requireAuth(req, res);
+  if (!actor) return;
+  if (actor.role !== 'Admin') return jsonError(res, 403, 'Admin only.');
+
+  const { password } = await parseBody(req);
+  if (!password || password.length < 6) return jsonError(res, 400, 'Password must be at least 6 characters.');
+
+  const salt         = crypto.randomBytes(16).toString('hex');
+  const passwordHash = hashPwd(password, salt);
+  const result = await db.collection('users').findOneAndUpdate(
+    { userId }, { $set: { salt, passwordHash, updatedAt: new Date() } }, { returnDocument: 'after' }
+  );
+  if (!result) return jsonError(res, 404, 'User not found.');
+  await db.collection('sessions').deleteMany({ userId }); // boot all sessions for that user
+  await audit('RESET_PASSWORD', actor, `Reset password for user "${userId}"`, null, 'user');
+  jsonOk(res, { message: 'Password reset. User sessions have been terminated.' });
 }
 
 // PUT /api/users/:id/status — admin toggles disabled flag
@@ -716,18 +752,50 @@ async function getDbStats(req, res) {
   if (!user) return;
   if (user.role !== 'Admin') return jsonError(res, 403, 'Admin only.');
 
-  const [users, reports, scans, logs] = await Promise.all([
+  const now = new Date();
+  const [users, reports, scans, logs, activeSessions] = await Promise.all([
     db.collection('users').countDocuments(),
     db.collection('reports').countDocuments(),
     db.collection('scans').countDocuments(),
     db.collection('audit_logs').countDocuments(),
+    db.collection('sessions').countDocuments({ expiresAt: { $gt: now } }),
   ]);
   jsonOk(res, {
     connected: true,
     dbName: DB_NAME,
     uri: MONGODB_URI.replace(/:\/\/[^@]+@/, '://***@'),
-    collections: { users, reports, scans, audit_logs: logs },
+    collections: { users, reports, scans, audit_logs: logs, activeSessions },
   });
+}
+
+// GET /api/sessions — admin: list all active sessions
+async function getActiveSessions(req, res) {
+  if (!db) return noDb(res);
+  const actor = await requireAuth(req, res);
+  if (!actor) return;
+  if (actor.role !== 'Admin') return jsonError(res, 403, 'Admin only.');
+
+  const sessions = await db.collection('sessions')
+    .find({ expiresAt: { $gt: new Date() } })
+    .sort({ createdAt: -1 })
+    .project({ token: 0 }) // never expose raw tokens
+    .toArray();
+  jsonOk(res, { data: sessions });
+}
+
+// DELETE /api/sessions/:id — admin: kill a specific session
+async function killSession(req, res, sessionId) {
+  if (!db) return noDb(res);
+  const actor = await requireAuth(req, res);
+  if (!actor) return;
+  if (actor.role !== 'Admin') return jsonError(res, 403, 'Admin only.');
+
+  let oid;
+  try { oid = new ObjectId(sessionId); } catch { return jsonError(res, 400, 'Invalid session ID.'); }
+  const result = await db.collection('sessions').deleteOne({ _id: oid });
+  if (result.deletedCount === 0) return jsonError(res, 404, 'Session not found or already expired.');
+  await audit('KILL_SESSION', actor, `Killed session ${sessionId}`, null, 'session');
+  jsonOk(res, { message: 'Session terminated.' });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -760,8 +828,10 @@ const server = http.createServer((req, res) => {
   if (url === '/api/users' && method === 'POST') return createUser(req, res);
   const uMatch  = url.match(/^\/api\/users\/([^/]+)$/);
   const usMatch = url.match(/^\/api\/users\/([^/]+)\/status$/);
-  if (usMatch && method === 'PUT')   return toggleUserStatus(req, res, usMatch[1]);
-  if (uMatch  && method === 'PUT')   return updateUser(req, res, uMatch[1]);
+  const urMatch = url.match(/^\/api\/users\/([^/]+)\/reset-password$/);
+  if (usMatch && method === 'PUT')    return toggleUserStatus(req, res, usMatch[1]);
+  if (urMatch && method === 'PUT')    return adminResetPassword(req, res, urMatch[1]);
+  if (uMatch  && method === 'PUT')    return updateUser(req, res, uMatch[1]);
   if (uMatch  && method === 'DELETE') return deleteUser(req, res, uMatch[1]);
 
   // ── Reports ──
@@ -782,6 +852,11 @@ const server = http.createServer((req, res) => {
   // ── Audit & Stats ──
   if (url === '/api/audit-logs' && method === 'GET') return getAuditLogs(req, res);
   if (url === '/api/db-stats'   && method === 'GET') return getDbStats(req, res);
+
+  // ── Sessions ──
+  if (url === '/api/sessions' && method === 'GET') return getActiveSessions(req, res);
+  const sessMatch = url.match(/^\/api\/sessions\/([^/]+)$/);
+  if (sessMatch && method === 'DELETE') return killSession(req, res, sessMatch[1]);
 
   // ── Unknown ──
   res.writeHead(404, { 'Content-Type': 'application/json' });
