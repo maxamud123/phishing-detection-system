@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, FileText, Activity, Shield, Plus, Trash2, X, Check, Database, Cpu, Clock, HardDrive, ScrollText, RefreshCw } from 'lucide-react';
+import { Users, FileText, Activity, Shield, Plus, Trash2, X, Check, Database, Cpu, Clock, HardDrive, ScrollText, RefreshCw, Lock, PowerOff, Power } from 'lucide-react';
 import { UsersAPI, AdminAPI, User, AuditLog } from '../lib/api';
 
 const cardStyle = {
@@ -45,6 +45,33 @@ export function Admin() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showUserForm, setShowUserForm] = useState(false);
+
+  // Reset password modal state
+  const [resetTarget, setResetTarget]   = useState<User | null>(null);
+  const [resetPwd,    setResetPwd]      = useState('');
+  const [resetSaving, setResetSaving]   = useState(false);
+  const [resetErr,    setResetErr]      = useState('');
+
+  const handleToggleStatus = async (user: User) => {
+    const next = !user.disabled;
+    const res  = await UsersAPI.toggleStatus(user.userId, next);
+    if (res.success) setUsers(prev => prev.map(u => u.userId === user.userId ? { ...u, disabled: next } : u));
+    else setError(res.error || 'Failed to update status.');
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetTarget) return;
+    setResetErr('');
+    if (resetPwd.length < 6) { setResetErr('Password must be at least 6 characters.'); return; }
+    setResetSaving(true);
+    try {
+      const res = await UsersAPI.resetPassword(resetTarget.userId, resetPwd);
+      if (res.success) { setResetTarget(null); setResetPwd(''); }
+      else setResetErr(res.error || 'Failed to reset password.');
+    } catch { setResetErr('Server error.'); }
+    finally { setResetSaving(false); }
+  };
 
   // Add user form state
   const [formName, setFormName]       = useState('');
@@ -293,7 +320,7 @@ export function Admin() {
           <table className="w-full" style={{ borderCollapse: 'collapse', minWidth: '600px' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #1a2040' }}>
-                {['Name', 'Email', 'Role', 'Last Login', ''].map(h => (
+                {['Name', 'Email', 'Role', 'Last Login', 'Status', ''].map(h => (
                   <th key={h} className="text-left py-3 px-3" style={{ fontSize: '11px', color: '#4a6080', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     {h}
                   </th>
@@ -307,7 +334,7 @@ export function Admin() {
                 </tr>
               ) : users.map(user => (
                 <tr key={user.userId}
-                  style={{ borderBottom: '1px solid rgba(26, 32, 64, 0.6)', transition: 'background-color 0.15s' }}
+                  style={{ borderBottom: '1px solid rgba(26, 32, 64, 0.6)', transition: 'background-color 0.15s', opacity: user.disabled ? 0.5 : 1 }}
                   onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)')}
                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
@@ -315,7 +342,7 @@ export function Admin() {
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs shrink-0"
                         style={{ background: 'linear-gradient(135deg, #00d4ff22, #00d4ff44)', color: '#00d4ff', fontWeight: 700 }}>
-                        {user.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                        {user.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                       </div>
                       <span style={{ fontSize: '13px', color: 'white', fontWeight: 500 }}>{user.name}</span>
                     </div>
@@ -330,17 +357,32 @@ export function Admin() {
                     {user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never'}
                   </td>
                   <td className="py-3 px-3">
+                    <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${user.disabled ? 'user-status-disabled' : 'user-status-active'}`}>
+                      {user.disabled ? 'Disabled' : 'Active'}
+                    </span>
+                  </td>
+                  <td className="py-3 px-3">
                     <div className="flex gap-1">
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteUser(user.userId)}
+                      <button type="button" onClick={() => { setResetTarget(user); setResetPwd(''); setResetErr(''); }}
+                        className="p-1.5 rounded-lg transition-colors hover:bg-white/5"
+                        style={{ color: '#4a6080' }} title="Reset password" aria-label={`Reset password for ${user.name}`}>
+                        <Lock className="w-3.5 h-3.5" />
+                      </button>
+                      {user.role !== 'Admin' && (
+                        <button type="button" onClick={() => handleToggleStatus(user)}
+                          className="p-1.5 rounded-lg transition-colors hover:bg-white/5"
+                          style={{ color: user.disabled ? '#22c55e' : '#f59e0b' }}
+                          title={user.disabled ? 'Enable user' : 'Disable user'}
+                          aria-label={user.disabled ? `Enable ${user.name}` : `Disable ${user.name}`}>
+                          {user.disabled ? <Power className="w-3.5 h-3.5" /> : <PowerOff className="w-3.5 h-3.5" />}
+                        </button>
+                      )}
+                      <button type="button" onClick={() => handleDeleteUser(user.userId)}
                         className="p-1.5 rounded-lg transition-colors"
                         style={{ color: '#4a6080' }}
                         onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
                         onMouseLeave={e => (e.currentTarget.style.color = '#4a6080')}
-                        title="Delete user"
-                        aria-label={`Delete user ${user.name}`}
-                      >
+                        title="Delete user" aria-label={`Delete user ${user.name}`}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -424,10 +466,10 @@ export function Admin() {
 
       {/* Add User Modal */}
       {showUserForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }}>
-          <div className="w-full max-w-md p-6 rounded-2xl" style={{ backgroundColor: '#0d1225', border: '1px solid #1a2040' }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 admin-modal-overlay">
+          <div className="w-full max-w-md admin-modal-card">
             <div className="flex items-center justify-between mb-6">
-              <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'white' }}>Add New User</h3>
+              <h3 className="admin-modal-title">Add New User</h3>
               <button type="button" aria-label="Close" onClick={() => setShowUserForm(false)} className="p-2 rounded-lg hover:bg-white/5 transition-colors" style={{ color: '#6b7f9e' }}>
                 <X className="w-5 h-5" />
               </button>
@@ -451,12 +493,45 @@ export function Admin() {
                 <input type="password" value={formPassword} onChange={e => setFormPassword(e.target.value)} placeholder="Min 6 characters" style={{ ...inputStyle, width: '100%' }} required minLength={6} />
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="submit" disabled={submitting} className="flex-1 py-3 rounded-xl hover:opacity-90 transition-all"
-                  style={{ background: 'linear-gradient(135deg, #00d4ff, #0099bb)', color: '#0a0e1a', fontWeight: 700, fontSize: '13px', opacity: submitting ? 0.6 : 1 }}>
+                <button type="submit" disabled={submitting} className="flex-1 py-3 rounded-xl hover:opacity-90 transition-all admin-modal-btn-primary"
+                  style={{ opacity: submitting ? 0.6 : 1 }}>
                   {submitting ? 'Creating…' : 'Add User'}
                 </button>
-                <button type="button" onClick={() => setShowUserForm(false)} className="flex-1 py-3 rounded-xl hover:bg-white/5 transition-colors"
-                  style={{ color: '#6b7f9e', border: '1px solid #1a2040', fontSize: '13px' }}>
+                <button type="button" onClick={() => setShowUserForm(false)} className="flex-1 py-3 rounded-xl hover:bg-white/5 transition-colors admin-modal-btn-cancel">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {resetTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 admin-modal-overlay">
+          <div className="w-full max-w-sm admin-modal-card">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h3 className="admin-modal-title">Reset Password</h3>
+                <p className="admin-modal-sub">{resetTarget.name}</p>
+              </div>
+              <button type="button" onClick={() => setResetTarget(null)} className="p-2 rounded-lg hover:bg-white/5" style={{ color: '#6b7f9e' }} aria-label="Close">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7f9e', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>New Password</label>
+                <input type="password" value={resetPwd} onChange={e => setResetPwd(e.target.value)}
+                  placeholder="Min 6 characters" style={{ ...inputStyle, width: '100%' }} required minLength={6} autoFocus />
+              </div>
+              {resetErr && <p className="admin-modal-error">{resetErr}</p>}
+              <div className="flex gap-3 pt-1">
+                <button type="submit" disabled={resetSaving} className="flex-1 py-2.5 rounded-xl hover:opacity-90 transition-all admin-modal-btn-primary"
+                  style={{ opacity: resetSaving ? 0.6 : 1 }}>
+                  {resetSaving ? 'Saving…' : 'Set Password'}
+                </button>
+                <button type="button" onClick={() => setResetTarget(null)} className="flex-1 py-2.5 rounded-xl hover:bg-white/5 transition-colors admin-modal-btn-cancel">
                   Cancel
                 </button>
               </div>

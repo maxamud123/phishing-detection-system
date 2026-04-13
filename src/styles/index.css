@@ -54,6 +54,101 @@ button:active:not(:disabled) {
   margin-top: 8px;
 }
 
+/* ── Admin modals ────────────────────────────────────────────────────────── */
+.admin-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.admin-modal-card {
+  background-color: #0d1225;
+  border: 1px solid #1a2040;
+  border-radius: 16px;
+  padding: 24px;
+}
+.admin-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+}
+.admin-modal-sub {
+  font-size: 12px;
+  color: #4a6080;
+  margin-top: 2px;
+}
+.admin-modal-error {
+  font-size: 12px;
+  color: #ef4444;
+}
+.admin-modal-btn-primary {
+  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+}
+.admin-modal-btn-cancel {
+  color: #6b7f9e;
+  border: 1px solid #1a2040;
+  font-size: 13px;
+}
+
+/* ── Admin user status badges ────────────────────────────────────────────── */
+.user-status-active {
+  color: #22c55e;
+  background-color: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+.user-status-disabled {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ── User chip (topbar) ──────────────────────────────────────────────────── */
+.user-chip {
+  border: 1px solid #1a2040;
+  background-color: #060b18;
+}
+.light-theme .user-chip {
+  border-color: #e2e8f0;
+  background-color: rgba(255,255,255,0.9);
+}
+
+/* ── Skeleton card wrappers ──────────────────────────────────────────────── */
+.skeleton-card {
+  background-color: #0d1225;
+  border: 1px solid #1a2040;
+  border-radius: 16px;
+  padding: 20px;
+}
+.skeleton-card-tall {
+  background-color: #0d1225;
+  border: 1px solid #1a2040;
+  border-radius: 16px;
+  padding: 20px;
+  height: 220px;
+}
+
+/* ── Skeleton loading animation ──────────────────────────────────────────── */
+/* Uses transform: translateX on ::after — pure compositor, no layout/paint  */
+@keyframes skeleton-shimmer {
+  to { transform: translateX(200%); }
+}
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #1a2040;
+  border-radius: 8px;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(35, 45, 82, 0.7) 50%, transparent 100%);
+  transform: translateX(-100%);
+  animation: skeleton-shimmer 1.6s linear infinite;
+}
+
 /* ── Scrollbar ────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

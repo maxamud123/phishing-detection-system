@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, Edit2, Trash2, Eye, Plus, X, AlertTriangle, ChevronUp, ChevronDown, ChevronsUpDown, Download } from 'lucide-react';
-import { ReportsAPI, Report, getUser } from '../lib/api';
+import { ReportsAPI, Report, getUser, exportCSV } from '../lib/api';
 
 const cardStyle = {
   backgroundColor: '#0d1225',
@@ -43,7 +43,7 @@ export function Reports() {
     setLoading(true);
     setError('');
     try {
-      const data = await ReportsAPI.getAll();
+      const data = await ReportsAPI.getAll(1, 1000);
       if (data.success) setReports(data.data);
       else setError(data.error || 'Failed to load reports.');
     } catch {
@@ -99,20 +99,17 @@ export function Reports() {
     setTimeout(() => { win.print(); }, 400);
   };
 
-  const exportCSV = () => {
+  const handleExportCSV = () => {
     const filtered = reports.filter(r => {
       const q = searchQuery.toLowerCase();
       return (!q || r.id.toLowerCase().includes(q) || r.target.toLowerCase().includes(q)) &&
              (filterStatus === 'All' || r.status === filterStatus);
     });
-    const header = 'Report ID,Reporter,Type,Target,Status,Risk Score,Timestamp,Description\n';
-    const rows = filtered.map(r =>
-      `"${r.id}","${r.reporter}","${r.type}","${r.target.replace(/"/g,'""')}","${r.status}",${r.riskScore},"${r.timestamp}","${(r.description||'').replace(/"/g,'""')}"`
-    ).join('\n');
-    const blob = new Blob([header + rows], { type: 'text/csv' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a'); a.href = url; a.download = `phishguard_reports_${Date.now()}.csv`; a.click();
-    URL.revokeObjectURL(url);
+    exportCSV(`phishguard_reports_${Date.now()}.csv`, filtered.map(r => ({
+      ID: r.id, Reporter: r.reporter, Type: r.type, Target: r.target,
+      Status: r.status, RiskScore: r.riskScore, Timestamp: r.timestamp,
+      Description: r.description || '',
+    })));
   };
 
   const handleSort = (key: keyof Report) => {
@@ -226,7 +223,7 @@ export function Reports() {
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {/* Export buttons */}
-          <button type="button" onClick={exportCSV}
+          <button type="button" onClick={handleExportCSV}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all hover:opacity-90"
             style={{ color: '#6b7f9e', backgroundColor: '#0d1225', border: '1px solid #1a2040', fontSize: '12px', fontWeight: 600 }}
             title="Export as CSV">
