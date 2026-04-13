@@ -412,7 +412,8 @@ async function getReports(req, res) {
   if (!db) return noDb(res);
   const user = await requireAuth(req, res);
   if (!user) return;
-  const reports = await db.collection('reports').find({}).sort({ createdAt: -1 }).toArray();
+  const filter = user.role === 'Admin' ? {} : { createdBy: user.userId };
+  const reports = await db.collection('reports').find(filter).sort({ createdAt: -1 }).toArray();
   jsonOk(res, { data: reports });
 }
 
@@ -446,6 +447,10 @@ async function updateReport(req, res, reportId) {
   const user = await requireAuth(req, res);
   if (!user) return;
 
+  const ownerFilter = user.role === 'Admin' ? { id: reportId } : { id: reportId, createdBy: user.userId };
+  const existing = await db.collection('reports').findOne(ownerFilter);
+  if (!existing) return jsonError(res, 404, 'Report not found or access denied.');
+
   const body   = await parseBody(req);
   const update = { updatedAt: new Date(), updatedBy: user.userId };
   if (body.status)      update.status      = body.status;
@@ -455,7 +460,6 @@ async function updateReport(req, res, reportId) {
   const result = await db.collection('reports').findOneAndUpdate(
     { id: reportId }, { $set: update }, { returnDocument: 'after' }
   );
-  if (!result) return jsonError(res, 404, 'Report not found.');
   await audit('UPDATE_REPORT', user, `Updated ${reportId} → ${body.status || 'edited'}`);
   jsonOk(res, { report: result });
 }
@@ -465,8 +469,9 @@ async function deleteReport(req, res, reportId) {
   if (!db) return noDb(res);
   const user = await requireAuth(req, res);
   if (!user) return;
-  const result = await db.collection('reports').deleteOne({ id: reportId });
-  if (result.deletedCount === 0) return jsonError(res, 404, 'Report not found.');
+  const ownerFilter = user.role === 'Admin' ? { id: reportId } : { id: reportId, createdBy: user.userId };
+  const result = await db.collection('reports').deleteOne(ownerFilter);
+  if (result.deletedCount === 0) return jsonError(res, 404, 'Report not found or access denied.');
   await audit('DELETE_REPORT', user, `Deleted ${reportId}`);
   jsonOk(res, { message: 'Report deleted.' });
 }
@@ -480,8 +485,9 @@ async function deleteScan(req, res, scanId) {
   if (!db) return noDb(res);
   const user = await requireAuth(req, res);
   if (!user) return;
-  const result = await db.collection('scans').deleteOne({ id: scanId });
-  if (result.deletedCount === 0) return jsonError(res, 404, 'Scan not found.');
+  const ownerFilter = user.role === 'Admin' ? { id: scanId } : { id: scanId, scannedBy: user.userId };
+  const result = await db.collection('scans').deleteOne(ownerFilter);
+  if (result.deletedCount === 0) return jsonError(res, 404, 'Scan not found or access denied.');
   await audit('DELETE_SCAN', user, `Deleted scan ${scanId}`);
   jsonOk(res, { message: 'Scan deleted.' });
 }
@@ -491,7 +497,8 @@ async function getScans(req, res) {
   if (!db) return noDb(res);
   const user = await requireAuth(req, res);
   if (!user) return;
-  const scans = await db.collection('scans').find({}).sort({ createdAt: -1 }).limit(500).toArray();
+  const filter = user.role === 'Admin' ? {} : { scannedBy: user.userId };
+  const scans = await db.collection('scans').find(filter).sort({ createdAt: -1 }).limit(500).toArray();
   jsonOk(res, { data: scans });
 }
 
