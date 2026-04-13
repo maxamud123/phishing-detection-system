@@ -50,7 +50,6 @@ export function Admin() {
   const [formName, setFormName]       = useState('');
   const [formEmail, setFormEmail]     = useState('');
   const [formPassword, setFormPassword] = useState('');
-  const [formRole, setFormRole]       = useState<User['role']>('User');
   const [submitting, setSubmitting]   = useState(false);
   const [formError, setFormError]     = useState('');
 
@@ -103,12 +102,12 @@ export function Admin() {
     try {
       const data = await UsersAPI.create({
         name: formName, email: formEmail,
-        password: formPassword, role: formRole,
+        password: formPassword,
       });
       if (data.success && data.user) {
         setUsers(prev => [...prev, data.user]);
         setShowUserForm(false);
-        setFormName(''); setFormEmail(''); setFormPassword(''); setFormRole('User');
+        setFormName(''); setFormEmail(''); setFormPassword('');
       } else {
         setFormError(data.error || 'Failed to create user.');
       }
@@ -450,13 +449,6 @@ export function Admin() {
               <div>
                 <label style={{ fontSize: '12px', color: '#6b7f9e', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Password</label>
                 <input type="password" value={formPassword} onChange={e => setFormPassword(e.target.value)} placeholder="Min 6 characters" style={{ ...inputStyle, width: '100%' }} required minLength={6} />
-              </div>
-              <div>
-                <label style={{ fontSize: '12px', color: '#6b7f9e', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Role</label>
-                <select aria-label="Role" value={formRole} onChange={e => setFormRole(e.target.value as User['role'])} style={{ ...inputStyle, width: '100%', cursor: 'pointer' }}>
-                  <option>Admin</option>
-                  <option>User</option>
-                </select>
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={submitting} className="flex-1 py-3 rounded-xl hover:opacity-90 transition-all"
