@@ -121,16 +121,25 @@ async function setupIndexes() {
 }
 
 async function seedDefaultData() {
-  const col   = db.collection('users');
-  const exists = await col.findOne({ email: ADMIN_EMAIL.toLowerCase() });
-  if (exists) return;
+  const col = db.collection('users');
 
-  const salt         = crypto.randomBytes(16).toString('hex');
-  const passwordHash = hashPwd(ADMIN_PASSWORD, salt);
-  await col.insertOne({
-    userId: 'USR-001', name: 'Admin', email: ADMIN_EMAIL.toLowerCase(),
-    passwordHash, salt, role: 'Admin', createdAt: new Date(),
-  });
+  // Remove any Admin accounts that are not the designated admin email
+  await col.deleteMany({ role: 'Admin', email: { $ne: ADMIN_EMAIL.toLowerCase() } });
+
+  // Create the admin account if it doesn't exist yet
+  const exists = await col.findOne({ email: ADMIN_EMAIL.toLowerCase() });
+  if (!exists) {
+    const salt         = crypto.randomBytes(16).toString('hex');
+    const passwordHash = hashPwd(ADMIN_PASSWORD, salt);
+    await col.insertOne({
+      userId: 'USR-001', name: 'Admin', email: ADMIN_EMAIL.toLowerCase(),
+      passwordHash, salt, role: 'Admin', createdAt: new Date(),
+    });
+  }
+
+  // Ensure the admin email always has Admin role (in case it was changed)
+  await col.updateOne({ email: ADMIN_EMAIL.toLowerCase() }, { $set: { role: 'Admin' } });
+
   console.log(`  ✅ Admin account ready  →  ${ADMIN_EMAIL}`);
 }
 
