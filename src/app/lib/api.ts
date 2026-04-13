@@ -27,10 +27,11 @@ export function isLoggedIn(): boolean {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export interface User {
-  userId: string;
-  name:   string;
-  email:  string;
-  role:   'Admin' | 'User';
+  userId:    string;
+  name:      string;
+  email:     string;
+  role:      'Admin' | 'User';
+  disabled?: boolean;
   createdAt?: string;
   lastLogin?: string;
 }
@@ -69,6 +70,13 @@ export interface AuditLog {
   timestamp: string;
 }
 
+export interface PagedResponse<T> {
+  data:  T[];
+  total: number;
+  page:  number;
+  pages: number;
+}
+
 // ── Core fetch wrapper ────────────────────────────────────────────────────────
 async function apiFetch<T = any>(
   url: string,
@@ -103,41 +111,40 @@ export const AuthAPI = {
     return data;
   },
 
-  async signup(payload: { name: string; email: string; password: string; confirmPassword: string; role?: string }) {
+  async signup(payload: { name: string; email: string; password: string; confirmPassword: string }) {
     return apiFetch<{ user: User; message: string }>('/api/auth/signup', 'POST', payload);
   },
 
   async logout() {
-    const token = getToken();
-    if (token) {
-      try { await apiFetch('/api/auth/logout', 'POST'); } catch { /* ignore */ }
-    }
+    try { await apiFetch('/api/auth/logout', 'POST'); } catch { /* ignore */ }
     clearSession();
   },
 
-  async me() {
-    return apiFetch<{ user: User }>('/api/auth/me');
-  },
-
-  async checkSetup() {
-    return apiFetch<{ needsSetup: boolean; dbConnected: boolean }>('/api/auth/check-setup');
-  },
+  me:            () => apiFetch<{ user: User }>('/api/auth/me'),
+  checkSetup:    () => apiFetch<{ needsSetup: boolean; dbConnected: boolean }>('/api/auth/check-setup'),
+  changePassword:(currentPassword: string, newPassword: string) =>
+    apiFetch('/api/auth/password', 'PUT', { currentPassword, newPassword }),
+  updateProfile: (payload: { name?: string; email?: string }) =>
+    apiFetch<{ user: User }>('/api/auth/profile', 'PUT', payload),
 };
 
 // ── Users API ─────────────────────────────────────────────────────────────────
 export const UsersAPI = {
-  getAll:    () => apiFetch<{ data: User[] }>('/api/users'),
-  create:    (u: Partial<User> & { password: string }) => apiFetch<{ user: User }>('/api/users', 'POST', u),
-  update:    (id: string, u: Partial<User> & { password?: string }) => apiFetch<{ user: User }>(`/api/users/${id}`, 'PUT', u),
-  delete:    (id: string) => apiFetch(`/api/users/${id}`, 'DELETE'),
+  getAll:       () => apiFetch<{ data: User[] }>('/api/users'),
+  create:       (u: Partial<User> & { password: string }) => apiFetch<{ user: User }>('/api/users', 'POST', u),
+  update:       (id: string, u: Partial<User> & { password?: string }) => apiFetch<{ user: User }>(`/api/users/${id}`, 'PUT', u),
+  delete:       (id: string) => apiFetch(`/api/users/${id}`, 'DELETE'),
+  toggleStatus: (id: string, disabled: boolean) => apiFetch<{ user: User }>(`/api/users/${id}/status`, 'PUT', { disabled }),
+  resetPassword:(id: string, password: string) => apiFetch(`/api/users/${id}`, 'PUT', { password }),
 };
 
 // ── Reports API ───────────────────────────────────────────────────────────────
 export const ReportsAPI = {
-  getAll:    () => apiFetch<{ data: Report[] }>('/api/reports'),
-  create:    (r: Partial<Report>) => apiFetch<{ report: Report }>('/api/reports', 'POST', r),
-  update:    (id: string, r: Partial<Report>) => apiFetch<{ report: Report }>(`/api/reports/${id}`, 'PUT', r),
-  delete:    (id: string) => apiFetch(`/api/reports/${id}`, 'DELETE'),
+  getAll:  (page = 1, limit = 50) =>
+    apiFetch<PagedResponse<Report>>(`/api/reports?page=${page}&limit=${limit}`),
+  create:  (r: Partial<Report>) => apiFetch<{ report: Report }>('/api/reports', 'POST', r),
+  update:  (id: string, r: Partial<Report>) => apiFetch<{ report: Report }>(`/api/reports/${id}`, 'PUT', r),
+  delete:  (id: string) => apiFetch(`/api/reports/${id}`, 'DELETE'),
 };
 
 // ── Analysis types ────────────────────────────────────────────────────────────
@@ -166,12 +173,13 @@ export interface AnalysisResult {
 
 // ── Scans API ─────────────────────────────────────────────────────────────────
 export const ScansAPI = {
-  getAll:   () => apiFetch<{ data: Scan[] }>('/api/scans'),
-  create:   (s: Partial<Scan>) => apiFetch<{ scan: Scan }>('/api/scans', 'POST', s),
-  delete:   (id: string) => apiFetch(`/api/scans/${id}`, 'DELETE'),
-  analyze:  (target: string, type: 'URL' | 'Email') =>
+  getAll:  (page = 1, limit = 50) =>
+    apiFetch<PagedResponse<Scan>>(`/api/scans?page=${page}&limit=${limit}`),
+  create:  (s: Partial<Scan>) => apiFetch<{ scan: Scan }>('/api/scans', 'POST', s),
+  delete:  (id: string) => apiFetch(`/api/scans/${id}`, 'DELETE'),
+  analyze: (target: string, type: 'URL' | 'Email') =>
     apiFetch<{ scan: Scan; analysis: AnalysisResult }>('/api/scan/analyze', 'POST', { target, type }),
-  bulk:     (targets: string[], type: 'URL' | 'Email') =>
+  bulk:    (targets: string[], type: 'URL' | 'Email') =>
     apiFetch<{ results: (AnalysisResult & { target: string; scanId: string; error?: string })[]; total: number }>('/api/scan/bulk', 'POST', { targets, type }),
 };
 
@@ -180,3 +188,22 @@ export const AdminAPI = {
   auditLogs: () => apiFetch<{ data: AuditLog[] }>('/api/audit-logs'),
   dbStats:   () => apiFetch<{ connected: boolean; dbName: string; collections: Record<string, number> }>('/api/db-stats'),
 };
+
+// ── CSV export helper ─────────────────────────────────────────────────────────
+export function exportCSV(filename: string, rows: object[]) {
+  if (!rows.length) return;
+  const keys   = Object.keys(rows[0]);
+  const header = keys.join(',');
+  const body   = rows.map(r =>
+    keys.map(k => {
+      const v = String((r as any)[k] ?? '').replace(/"/g, '""');
+      return v.includes(',') || v.includes('"') || v.includes('\n') ? `"${v}"` : v;
+    }).join(',')
+  ).join('\n');
+  const blob = new Blob([header + '\n' + body], { type: 'text/csv' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}

@@ -3,7 +3,7 @@ import {
   Search, Globe, Mail, Eye, Trash2, Download, ChevronUp, ChevronDown,
   ChevronsUpDown, ChevronLeft, ChevronRight, X, Clock, Target, Zap, AlertTriangle,
 } from 'lucide-react';
-import { ScansAPI, Scan } from '../lib/api';
+import { ScansAPI, Scan, exportCSV } from '../lib/api';
 
 interface HistoryEntry {
   id: string;
@@ -65,7 +65,7 @@ export function ScanHistory() {
   const [error, setError]           = useState('');
 
   useEffect(() => {
-    ScansAPI.getAll().then(data => {
+    ScansAPI.getAll(1, 1000).then(data => {
       if (data.success) setHistory(data.data.map(scanToEntry));
       else setError(data.error || 'Failed to load scan history.');
     }).catch(() => setError('Cannot connect to server.')).finally(() => setLoading(false));
@@ -124,16 +124,11 @@ export function ScanHistory() {
 
   const getScoreColor = (s: number) => s >= 40 ? '#ef4444' : s >= 15 ? '#fbbf24' : '#22c55e';
 
-  const exportCSV = () => {
-    const header = 'ID,Type,Target,Score,ThreatLevel,Duration,Timestamp,RedFlags\n';
-    const rows = filtered.map(h =>
-      `${h.id},${h.type},"${h.target}",${h.score},${h.threatLevel},${h.duration},${h.timestamp},${h.redFlags}`
-    ).join('\n');
-    const blob = new Blob([header + rows], { type: 'text/csv' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'scan-history.csv';
-    a.click();
+  const handleExportCSV = () => {
+    exportCSV('scan-history.csv', filtered.map(h => ({
+      ID: h.id, Type: h.type.toUpperCase(), Target: h.target,
+      Score: h.score, ThreatLevel: h.threatLevel, Timestamp: h.timestamp,
+    })));
   };
 
   const clearFilters = () => {
@@ -228,7 +223,7 @@ export function ScanHistory() {
               )}
               <button
                 type="button"
-                onClick={exportCSV}
+                onClick={handleExportCSV}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs transition-all hover:opacity-90"
                 style={{ color: '#00d4ff', border: '1px solid rgba(0,212,255,0.3)', backgroundColor: 'rgba(0,212,255,0.06)' }}
               >

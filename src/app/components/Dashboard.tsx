@@ -88,7 +88,7 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([ScansAPI.getAll(), ReportsAPI.getAll()])
+    Promise.all([ScansAPI.getAll(1, 1000), ReportsAPI.getAll(1, 1000)])
       .then(([s, r]) => {
         if (s.success) setScans(s.data);
         if (r.success) setReports(r.data);
@@ -147,6 +147,28 @@ export function Dashboard() {
       default:           return { color: '#94a3b8', backgroundColor: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.2)' };
     }
   };
+
+  if (loading) return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {[1,2,3,4].map(i => (
+          <div key={i} className="skeleton-card">
+            <div className="skeleton h-4 w-24 mb-3" />
+            <div className="skeleton h-8 w-16 mb-2" />
+            <div className="skeleton h-3 w-32" />
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {[1,2].map(i => (
+          <div key={i} className="skeleton-card-tall">
+            <div className="skeleton h-4 w-32 mb-4" />
+            <div className="skeleton h-40 w-full" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">

@@ -182,6 +182,8 @@ async function requireAuth(req, res) {
   if (!token) { jsonError(res, 401, 'Authentication required.'); return null; }
   const session = await db.collection('sessions').findOne({ token, expiresAt: { $gt: new Date() } });
   if (!session) { jsonError(res, 401, 'Session expired. Please log in again.'); return null; }
+  const user = await db.collection('users').findOne({ userId: session.userId }, { projection: { disabled: 1 } });
+  if (user?.disabled) { jsonError(res, 403, 'Account disabled.'); return null; }
   return { userId: session.userId, name: session.name, email: session.email, role: session.role };
 }
 function noDb(res) {
@@ -259,6 +261,7 @@ async function authLogin(req, res) {
   if (!user) return jsonError(res, 401, 'No account found with that email.');
   if (hashPwd(password, user.salt) !== user.passwordHash)
     return jsonError(res, 401, 'Incorrect password.');
+  if (user.disabled) return jsonError(res, 403, 'Your account has been disabled. Contact your administrator.');
 
   const token = genToken();
   await db.collection('sessions').insertOne({
@@ -280,6 +283,7 @@ async function authSignup(req, res) {
   const { name, email, password, confirmPassword } = body;
 
   if (!name || !email || !password) return jsonError(res, 400, 'Name, email, and password are required.');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return jsonError(res, 400, 'Invalid email address.');
   if (password !== confirmPassword)  return jsonError(res, 400, 'Passwords do not match.');
   if (password.length < 6)           return jsonError(res, 400, 'Password must be at least 6 characters.');
 
@@ -320,6 +324,53 @@ async function authCheckSetup(req, res) {
   if (!db) return jsonOk(res, { needsSetup: false, dbConnected: false });
   const count = await db.collection('users').countDocuments();
   jsonOk(res, { needsSetup: count === 0, dbConnected: true });
+}
+
+// PUT /api/auth/password — logged-in user changes their own password
+async function authChangePassword(req, res) {
+  if (!db) return noDb(res);
+  const user = await requireAuth(req, res);
+  if (!user) return;
+
+  const { currentPassword, newPassword } = await parseBody(req);
+  if (!currentPassword || !newPassword) return jsonError(res, 400, 'Current and new password required.');
+  if (newPassword.length < 6) return jsonError(res, 400, 'New password must be at least 6 characters.');
+
+  const dbUser = await db.collection('users').findOne({ userId: user.userId });
+  if (!dbUser) return jsonError(res, 404, 'User not found.');
+  if (hashPwd(currentPassword, dbUser.salt) !== dbUser.passwordHash)
+    return jsonError(res, 401, 'Current password is incorrect.');
+
+  const salt         = crypto.randomBytes(16).toString('hex');
+  const passwordHash = hashPwd(newPassword, salt);
+  await db.collection('users').updateOne({ userId: user.userId }, { $set: { salt, passwordHash, updatedAt: new Date() } });
+  await db.collection('sessions').deleteMany({ userId: user.userId }); // invalidate all sessions
+  await audit('CHANGE_PASSWORD', user, 'Changed own password');
+  jsonOk(res, { message: 'Password changed. Please log in again.' });
+}
+
+// PUT /api/auth/profile — logged-in user updates their own name/email
+async function authUpdateProfile(req, res) {
+  if (!db) return noDb(res);
+  const user = await requireAuth(req, res);
+  if (!user) return;
+
+  const body   = await parseBody(req);
+  const update = { updatedAt: new Date() };
+  if (body.name)  update.name  = body.name.trim();
+  if (body.email) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return jsonError(res, 400, 'Invalid email address.');
+    const conflict = await db.collection('users').findOne({ email: body.email.toLowerCase(), userId: { $ne: user.userId } });
+    if (conflict) return jsonError(res, 400, 'Email already in use.');
+    update.email = body.email.toLowerCase().trim();
+  }
+
+  const result = await db.collection('users').findOneAndUpdate(
+    { userId: user.userId }, { $set: update },
+    { returnDocument: 'after', projection: { passwordHash: 0, salt: 0 } }
+  );
+  await audit('UPDATE_PROFILE', user, 'Updated own profile');
+  jsonOk(res, { user: result });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -403,6 +454,25 @@ async function deleteUser(req, res, userId) {
   jsonOk(res, { message: 'User deleted.' });
 }
 
+// PUT /api/users/:id/status — admin toggles disabled flag
+async function toggleUserStatus(req, res, userId) {
+  if (!db) return noDb(res);
+  const actor = await requireAuth(req, res);
+  if (!actor) return;
+  if (actor.role !== 'Admin') return jsonError(res, 403, 'Admin only.');
+  if (userId === actor.userId) return jsonError(res, 400, 'Cannot disable your own account.');
+
+  const { disabled } = await parseBody(req);
+  const result = await db.collection('users').findOneAndUpdate(
+    { userId }, { $set: { disabled: !!disabled, updatedAt: new Date() } },
+    { returnDocument: 'after', projection: { passwordHash: 0, salt: 0 } }
+  );
+  if (!result) return jsonError(res, 404, 'User not found.');
+  if (disabled) await db.collection('sessions').deleteMany({ userId }); // boot active sessions
+  await audit(disabled ? 'DISABLE_USER' : 'ENABLE_USER', actor, `${disabled ? 'Disabled' : 'Enabled'} user "${userId}"`);
+  jsonOk(res, { user: result });
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 //  REPORTS ROUTES
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -412,9 +482,16 @@ async function getReports(req, res) {
   if (!db) return noDb(res);
   const user = await requireAuth(req, res);
   if (!user) return;
+  const qs     = Object.fromEntries(new URL('http://x' + req.url).searchParams);
+  const page   = Math.max(1, parseInt(qs.page  || '1',  10));
+  const limit  = Math.min(100, Math.max(1, parseInt(qs.limit || '50', 10)));
+  const skip   = (page - 1) * limit;
   const filter = user.role === 'Admin' ? {} : { createdBy: user.userId };
-  const reports = await db.collection('reports').find(filter).sort({ createdAt: -1 }).toArray();
-  jsonOk(res, { data: reports });
+  const [reports, total] = await Promise.all([
+    db.collection('reports').find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray(),
+    db.collection('reports').countDocuments(filter),
+  ]);
+  jsonOk(res, { data: reports, total, page, pages: Math.ceil(total / limit) });
 }
 
 // POST /api/reports
@@ -497,9 +574,16 @@ async function getScans(req, res) {
   if (!db) return noDb(res);
   const user = await requireAuth(req, res);
   if (!user) return;
+  const qs    = Object.fromEntries(new URL('http://x' + req.url).searchParams);
+  const page  = Math.max(1, parseInt(qs.page  || '1',  10));
+  const limit = Math.min(100, Math.max(1, parseInt(qs.limit || '50', 10)));
+  const skip  = (page - 1) * limit;
   const filter = user.role === 'Admin' ? {} : { scannedBy: user.userId };
-  const scans = await db.collection('scans').find(filter).sort({ createdAt: -1 }).limit(500).toArray();
-  jsonOk(res, { data: scans });
+  const [scans, total] = await Promise.all([
+    db.collection('scans').find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray(),
+    db.collection('scans').countDocuments(filter),
+  ]);
+  jsonOk(res, { data: scans, total, page, pages: Math.ceil(total / limit) });
 }
 
 // POST /api/scans
@@ -668,13 +752,17 @@ const server = http.createServer((req, res) => {
   if (url === '/api/auth/logout'      && method === 'POST') return authLogout(req, res);
   if (url === '/api/auth/me'          && method === 'GET')  return authMe(req, res);
   if (url === '/api/auth/check-setup' && method === 'GET')  return authCheckSetup(req, res);
+  if (url === '/api/auth/password'    && method === 'PUT')  return authChangePassword(req, res);
+  if (url === '/api/auth/profile'     && method === 'PUT')  return authUpdateProfile(req, res);
 
   // ── Users ──
   if (url === '/api/users' && method === 'GET')  return getUsers(req, res);
   if (url === '/api/users' && method === 'POST') return createUser(req, res);
-  const uMatch = url.match(/^\/api\/users\/([^/]+)$/);
-  if (uMatch && method === 'PUT')    return updateUser(req, res, uMatch[1]);
-  if (uMatch && method === 'DELETE') return deleteUser(req, res, uMatch[1]);
+  const uMatch  = url.match(/^\/api\/users\/([^/]+)$/);
+  const usMatch = url.match(/^\/api\/users\/([^/]+)\/status$/);
+  if (usMatch && method === 'PUT')   return toggleUserStatus(req, res, usMatch[1]);
+  if (uMatch  && method === 'PUT')   return updateUser(req, res, uMatch[1]);
+  if (uMatch  && method === 'DELETE') return deleteUser(req, res, uMatch[1]);
 
   // ── Reports ──
   if (url === '/api/reports' && method === 'GET')  return getReports(req, res);

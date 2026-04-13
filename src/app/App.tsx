@@ -12,13 +12,15 @@ import { Admin } from './components/Admin';
 import { ScanHistory } from './components/ScanHistory';
 import { Analytics } from './components/Analytics';
 import { KnowledgeBase } from './components/KnowledgeBase';
+import { Profile } from './components/Profile';
 import { Login } from './components/Login';
 import { Signup } from './components/Signup';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { AuthAPI, getUser, getToken, clearSession } from './lib/api';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-type Tab = 'dashboard' | 'scanner' | 'reports' | 'scanhistory' | 'analytics' | 'knowledgebase' | 'admin';
+type Tab = 'dashboard' | 'scanner' | 'reports' | 'scanhistory' | 'analytics' | 'knowledgebase' | 'admin' | 'profile';
 type Theme = 'dark' | 'light';
 
 interface AppNotification {
@@ -49,6 +51,7 @@ const allNavItems = [
   { id: 'analytics'     as Tab, label: 'Analytics',       icon: BarChart2,       roles: ['Admin','User'] },
   { id: 'knowledgebase' as Tab, label: 'Knowledge Base',  icon: BookOpen,        roles: ['Admin','User'] },
   { id: 'admin'         as Tab, label: 'Admin',           icon: Settings,        roles: ['Admin'] },
+  { id: 'profile'       as Tab, label: 'My Profile',      icon: Shield,          roles: ['Admin','User'] },
 ];
 
 const pageTitles: Record<Tab, string> = {
@@ -59,6 +62,7 @@ const pageTitles: Record<Tab, string> = {
   analytics:     'Analytics',
   knowledgebase: 'Knowledge Base',
   admin:         'Admin Panel',
+  profile:       'My Profile',
 };
 
 const INITIAL_NOTIFICATIONS: AppNotification[] = [];
@@ -582,9 +586,13 @@ export default function App() {
             {/* Divider */}
             <div className="w-px h-6 mx-1" style={{ backgroundColor: t.sidebarBorder }} />
 
-            {/* User chip */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl"
-              style={{ border: `1px solid ${t.sidebarBorder}`, backgroundColor: t.inputBg }}>
+            {/* User chip — click to open profile */}
+            <button
+              type="button"
+              onClick={() => navigate('profile')}
+              className="user-chip flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all hover:opacity-80"
+              title="My Profile"
+            >
               <div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold"
                 style={{ background: 'linear-gradient(135deg, #00d4ff33, #00d4ff55)', color: '#00d4ff' }}>
                 {(currentUser?.name || currentUser?.email || 'U').slice(0, 2).toUpperCase()}
@@ -600,7 +608,7 @@ export default function App() {
                 }}>
                 {currentUser?.role}
               </span>
-            </div>
+            </button>
 
             {/* Sign out */}
             <button
@@ -623,15 +631,18 @@ export default function App() {
             backgroundSize: '40px 40px',
           }}
         >
-          {activeTab === 'dashboard'     && <Dashboard />}
-          {activeTab === 'scanner'       && <Scanner />}
-          {activeTab === 'reports'       && <Reports />}
-          {activeTab === 'scanhistory'   && <ScanHistory />}
-          {activeTab === 'analytics'     && <Analytics />}
-          {activeTab === 'knowledgebase' && <KnowledgeBase />}
-          {activeTab === 'admin' && (
-            currentUser?.role === 'Admin' ? <Admin /> : <AccessDenied />
-          )}
+          <ErrorBoundary>
+            {activeTab === 'dashboard'     && <Dashboard />}
+            {activeTab === 'scanner'       && <Scanner />}
+            {activeTab === 'reports'       && <Reports />}
+            {activeTab === 'scanhistory'   && <ScanHistory />}
+            {activeTab === 'analytics'     && <Analytics />}
+            {activeTab === 'knowledgebase' && <KnowledgeBase />}
+            {activeTab === 'profile'       && <Profile />}
+            {activeTab === 'admin' && (
+              currentUser?.role === 'Admin' ? <Admin /> : <AccessDenied />
+            )}
+          </ErrorBoundary>
         </main>
       </div>
     </div>
