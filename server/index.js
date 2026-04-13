@@ -67,6 +67,10 @@ const MONGODB_URI = process.env.MONGODB_URI    || 'mongodb://localhost:27017';
 const DB_NAME     = process.env.DB_NAME        || 'phishguard_pds';
 const CORS_ORIGIN = process.env.CORS_ORIGIN    || 'http://localhost:5173';
 
+// ─── Admin credentials (set in server/.env) ───────────────────────────────────
+const ADMIN_EMAIL    = process.env.ADMIN_EMAIL    || 'admin@phishguard.local';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin@1234';
+
 // ─── Threat Intelligence API keys (optional) ─────────────────────────────────
 const VIRUSTOTAL_KEY    = process.env.VIRUSTOTAL_API_KEY        || '';
 const SAFE_BROWSING_KEY = process.env.GOOGLE_SAFE_BROWSING_KEY  || '';
@@ -117,7 +121,17 @@ async function setupIndexes() {
 }
 
 async function seedDefaultData() {
-  // Demo seeding removed — accounts are created via signup
+  const col   = db.collection('users');
+  const exists = await col.findOne({ email: ADMIN_EMAIL.toLowerCase() });
+  if (exists) return;
+
+  const salt         = crypto.randomBytes(16).toString('hex');
+  const passwordHash = hashPwd(ADMIN_PASSWORD, salt);
+  await col.insertOne({
+    userId: 'USR-001', name: 'Admin', email: ADMIN_EMAIL.toLowerCase(),
+    passwordHash, salt, role: 'Admin', createdAt: new Date(),
+  });
+  console.log(`  ✅ Admin account ready  →  ${ADMIN_EMAIL}`);
 }
 
 // ─── Crypto Helpers ───────────────────────────────────────────────────────────
@@ -254,46 +268,25 @@ async function authSignup(req, res) {
   if (!db) return noDb(res);
   const body = await parseBody(req);
   if (body.__tooLarge) return jsonError(res, 413, 'Request too large.');
-  const { name, email, password, confirmPassword, role } = body;
+  const { name, email, password, confirmPassword } = body;
 
   if (!name || !email || !password) return jsonError(res, 400, 'Name, email, and password are required.');
   if (password !== confirmPassword)  return jsonError(res, 400, 'Passwords do not match.');
   if (password.length < 6)           return jsonError(res, 400, 'Password must be at least 6 characters.');
 
-  const col   = db.collection('users');
-  const count = await col.countDocuments();
-
-  // If users already exist, check for an optional auth token
-  let actor = null;
-  if (count > 0) {
-    const authHeader = req.headers['authorization'] || '';
-    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-    if (token) {
-      // Token present — validate it; must be Admin to assign any role
-      actor = await requireAuth(req, res);
-      if (!actor) return;
-      if (actor.role !== 'Admin') return jsonError(res, 403, 'Only Admins can create new accounts.');
-    }
-    // No token — public self-signup allowed, role is always 'User'
-  }
+  const col = db.collection('users');
 
   const exists = await col.findOne({ email: email.toLowerCase().trim() });
   if (exists) return jsonError(res, 400, 'An account with this email already exists.');
 
-  const assignedRole = count === 0 ? 'Admin' : 'User'; // first account is Admin, all others are User
-
   const salt         = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPwd(password, salt);
-  const userId       = count === 0 ? 'USR-001' : genUserId();
+  const userId       = genUserId();
 
   const newUser = { userId, name: name.trim(), email: email.toLowerCase().trim(),
-    passwordHash, salt, role: assignedRole, createdAt: new Date() };
+    passwordHash, salt, role: 'User', createdAt: new Date() };
   await col.insertOne(newUser);
-  await audit('SIGNUP', actor || { userId, name: name.trim() },
-    actor
-      ? `Admin "${actor.name}" created user "${name}" (${assignedRole})`
-      : `First admin account created: "${name}"`
-  );
+  await audit('SIGNUP', { userId, name: name.trim() }, `New user signed up: "${name}"`);
 
   const { passwordHash: ph, salt: s, _id, ...safe } = newUser;
   jsonOk(res, { user: safe, message: 'Account created successfully.' }, 201);
