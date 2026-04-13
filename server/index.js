@@ -280,11 +280,7 @@ async function authSignup(req, res) {
   const exists = await col.findOne({ email: email.toLowerCase().trim() });
   if (exists) return jsonError(res, 400, 'An account with this email already exists.');
 
-  const assignedRole = count === 0
-    ? 'Admin'
-    : actor
-      ? (['Admin','User'].includes(role) ? role : 'User')   // Admin can assign any role
-      : 'User';                                              // Public signup always gets User
+  const assignedRole = count === 0 ? 'Admin' : 'User'; // first account is Admin, all others are User
 
   const salt         = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPwd(password, salt);
@@ -345,7 +341,7 @@ async function createUser(req, res) {
   if (!actor) return;
   if (actor.role !== 'Admin') return jsonError(res, 403, 'Admin only.');
 
-  const { name, email, password, role } = await parseBody(req);
+  const { name, email, password } = await parseBody(req);
   if (!name || !email || !password) return jsonError(res, 400, 'Name, email, and password required.');
 
   const exists = await db.collection('users').findOne({ email: email.toLowerCase() });
@@ -354,7 +350,7 @@ async function createUser(req, res) {
   const salt         = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPwd(password, salt);
   const userId       = genUserId();
-  const assignedRole = ['Admin','User'].includes(role) ? role : 'User';
+  const assignedRole = 'User'; // only one Admin (the first account) — all new accounts are User
 
   const newUser = { userId, name: name.trim(), email: email.toLowerCase(),
     passwordHash, salt, role: assignedRole, createdAt: new Date() };
@@ -376,7 +372,7 @@ async function updateUser(req, res, userId) {
   const update = { updatedAt: new Date() };
   if (body.name)  update.name  = body.name.trim();
   if (body.email) update.email = body.email.toLowerCase().trim();
-  if (body.role && ['Admin','User'].includes(body.role)) update.role = body.role;
+  // role is not updatable — only the original Admin account holds that role
   if (body.password) {
     update.salt         = crypto.randomBytes(16).toString('hex');
     update.passwordHash = hashPwd(body.password, update.salt);

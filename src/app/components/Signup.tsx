@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, User, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle, ChevronDown } from 'lucide-react';
+import { Shield, User, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import { AuthAPI } from '../lib/api';
 
 interface SignupProps {
@@ -8,22 +8,15 @@ interface SignupProps {
   isAdminCreating?: boolean; // true when admin is adding a user from admin panel
 }
 
-const ROLES = [
-  { value: 'Admin', label: 'Admin', desc: 'Full access — manage users, reports, settings', color: '#a78bfa', bg: 'rgba(167,139,250,0.08)', border: 'rgba(167,139,250,0.25)' },
-  { value: 'User',  label: 'User',  desc: 'Scan URLs, submit and manage reports',          color: '#00d4ff', bg: 'rgba(0,212,255,0.08)',   border: 'rgba(0,212,255,0.25)'   },
-];
 
 export function Signup({ onSuccess, onBackToLogin, isAdminCreating = false }: SignupProps) {
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '', role: 'User' });
-  const [showPwd, setShowPwd]   = useState(false);
-  const [showCfm, setShowCfm]   = useState(false);
-  const [focused, setFocused]   = useState<string | null>(null);
-  const [loading, setLoading]   = useState(false);
-  const [error,   setError]     = useState('');
-  const [success, setSuccess]   = useState('');
-  const [showRoles, setShowRoles] = useState(false);
-
-  const selectedRole = ROLES.find(r => r.value === form.role) || ROLES[1];
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [showPwd, setShowPwd] = useState(false);
+  const [showCfm, setShowCfm] = useState(false);
+  const [focused, setFocused] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState('');
+  const [success, setSuccess] = useState('');
 
   const strength = (() => {
     const p = form.password;
@@ -60,7 +53,6 @@ export function Signup({ onSuccess, onBackToLogin, isAdminCreating = false }: Si
         email:           form.email.trim(),
         password:        form.password,
         confirmPassword: form.confirmPassword,
-        role:            form.role,
       });
       if (!res.success) { setError(res.error || 'Signup failed.'); return; }
       setSuccess(isAdminCreating
@@ -148,40 +140,6 @@ export function Signup({ onSuccess, onBackToLogin, isAdminCreating = false }: Si
                 <input type="email" value={form.email} onChange={e => setForm({...form, email:e.target.value})}
                   onFocus={() => setFocused('email')} onBlur={() => setFocused(null)}
                   placeholder="your@email.com" style={{ ...inputStyle('email'), paddingLeft:'44px' }} required />
-              </div>
-            </div>
-
-            {/* Role (always shown — admins choose, first user gets Admin) */}
-            <div>
-              <label style={{ fontSize:'11px', color:'#6b7f9e', display:'block', marginBottom:'8px', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:600 }}>Role</label>
-              <div className="relative">
-                <button type="button" onClick={() => setShowRoles(!showRoles)}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all"
-                  style={{ backgroundColor:'#060b18', border:`1px solid ${showRoles ? 'rgba(0,212,255,0.5)':'#1a2040'}`, color:'white' }}>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: selectedRole.color }} />
-                    <span style={{ fontSize:'14px', fontWeight:500 }}>{selectedRole.label}</span>
-                    <span style={{ fontSize:'12px', color:'#4a6080' }}>{selectedRole.desc}</span>
-                  </div>
-                  <ChevronDown className="w-4 h-4" style={{ color:'#4a6080', transform: showRoles ? 'rotate(180deg)':'none', transition:'transform 0.2s' }} />
-                </button>
-                {showRoles && (
-                  <div className="absolute top-full left-0 right-0 mt-1 rounded-xl overflow-hidden z-50" style={{ backgroundColor:'#0d1225', border:'1px solid #1a2040', boxShadow:'0 8px 32px rgba(0,0,0,0.4)' }}>
-                    {ROLES.map(role => (
-                      <button key={role.value} type="button"
-                        onClick={() => { setForm({...form, role: role.value}); setShowRoles(false); }}
-                        className="w-full flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/5"
-                        style={{ borderBottom:'1px solid #1a2040' }}>
-                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: role.color }} />
-                        <div className="text-left">
-                          <div style={{ fontSize:'13px', fontWeight:600, color: role.color }}>{role.label}</div>
-                          <div style={{ fontSize:'11px', color:'#4a6080' }}>{role.desc}</div>
-                        </div>
-                        {form.role === role.value && <CheckCircle className="w-4 h-4 ml-auto" style={{ color: role.color }} />}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
 
