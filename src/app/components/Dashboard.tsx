@@ -1,16 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ScanLine, AlertTriangle, FileText, ShieldCheck, TrendingUp, TrendingDown } from 'lucide-react';
+import { ScanLine, AlertTriangle, FileText, ShieldCheck } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   PieChart, Pie, Cell,
 } from 'recharts';
 import { ScansAPI, ReportsAPI, Scan, Report } from '../lib/api';
-
-const cardStyle = {
-  backgroundColor: '#0d1225',
-  border: '1px solid #1a2040',
-  borderRadius: '16px',
-};
+import { cardStyle, getRiskStyle } from '../lib/styles';
 
 const tooltipStyle = {
   backgroundColor: '#0d1225',
@@ -103,13 +98,12 @@ export function Dashboard() {
   const safe          = scans.filter(s => s.result === 'Safe').length;
   const totalThreats  = dangerous + suspicious;
   const totalReports  = reports.length;
-  const totalSafe     = safe;
 
   const statCards = [
-    { label: 'Total Scans',      value: loading ? '…' : totalScans.toLocaleString(),   icon: ScanLine,    color: '#00d4ff', bg: 'rgba(0, 212, 255, 0.08)',  border: 'rgba(0, 212, 255, 0.3)',  glow: 'rgba(0, 212, 255, 0.15)',  trend: null,    trendUp: true  },
-    { label: 'Threats Detected', value: loading ? '…' : totalThreats.toLocaleString(), icon: AlertTriangle, color: '#ef4444', bg: 'rgba(239, 68, 68, 0.08)',  border: 'rgba(239, 68, 68, 0.3)',  glow: 'rgba(239, 68, 68, 0.15)',  trend: null,    trendUp: false },
-    { label: 'Reports Filed',    value: loading ? '…' : totalReports.toLocaleString(), icon: FileText,    color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.08)', border: 'rgba(251, 191, 36, 0.3)', glow: 'rgba(251, 191, 36, 0.15)', trend: null,    trendUp: true  },
-    { label: 'Safe URLs',        value: loading ? '…' : totalSafe.toLocaleString(),    icon: ShieldCheck, color: '#22c55e', bg: 'rgba(34, 197, 94, 0.08)',  border: 'rgba(34, 197, 94, 0.3)',  glow: 'rgba(34, 197, 94, 0.15)',  trend: null,    trendUp: true  },
+    { label: 'Total Scans',      value: loading ? '…' : totalScans.toLocaleString(),   icon: ScanLine,      color: '#00d4ff', bg: 'rgba(0, 212, 255, 0.08)',  border: 'rgba(0, 212, 255, 0.3)',  glow: 'rgba(0, 212, 255, 0.15)'  },
+    { label: 'Threats Detected', value: loading ? '…' : totalThreats.toLocaleString(), icon: AlertTriangle, color: '#ef4444', bg: 'rgba(239, 68, 68, 0.08)',  border: 'rgba(239, 68, 68, 0.3)',  glow: 'rgba(239, 68, 68, 0.15)'  },
+    { label: 'Reports Filed',    value: loading ? '…' : totalReports.toLocaleString(), icon: FileText,      color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.08)', border: 'rgba(251, 191, 36, 0.3)', glow: 'rgba(251, 191, 36, 0.15)' },
+    { label: 'Safe URLs',        value: loading ? '…' : safe.toLocaleString(),         icon: ShieldCheck,   color: '#22c55e', bg: 'rgba(34, 197, 94, 0.08)',  border: 'rgba(34, 197, 94, 0.3)',  glow: 'rgba(34, 197, 94, 0.15)'  },
   ];
 
   const weeklyData = buildWeeklyData(scans);
@@ -138,15 +132,6 @@ export function Dashboard() {
   ]
     .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
     .slice(0, 5);
-
-  const getRiskStyle = (risk: string) => {
-    switch (risk) {
-      case 'Safe':       return { color: '#22c55e', backgroundColor: 'rgba(34, 197, 94, 0.12)',  border: '1px solid rgba(34, 197, 94, 0.3)'  };
-      case 'Suspicious': return { color: '#fbbf24', backgroundColor: 'rgba(251, 191, 36, 0.12)', border: '1px solid rgba(251, 191, 36, 0.3)' };
-      case 'Dangerous':  return { color: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.12)',  border: '1px solid rgba(239, 68, 68, 0.3)'  };
-      default:           return { color: '#94a3b8', backgroundColor: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.2)' };
-    }
-  };
 
   if (loading) return (
     <div className="space-y-6">
@@ -181,17 +166,10 @@ export function Dashboard() {
               style={{ backgroundColor: '#0d1225', border: `1px solid ${card.border}`, boxShadow: `0 0 30px ${card.glow}, 0 4px 24px rgba(0,0,0,0.3)` }}>
               <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl"
                 style={{ background: `linear-gradient(90deg, transparent, ${card.color}, transparent)` }} />
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-2.5 rounded-xl" style={{ backgroundColor: card.bg, border: `1px solid ${card.border}` }}>
+              <div className="mb-4">
+                <div className="p-2.5 rounded-xl w-fit" style={{ backgroundColor: card.bg, border: `1px solid ${card.border}` }}>
                   <Icon className="w-5 h-5" style={{ color: card.color }} />
                 </div>
-                {card.trend && (
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
-                    style={{ color: card.trendUp ? '#22c55e' : '#ef4444', backgroundColor: card.trendUp ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}>
-                    {card.trendUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                    {card.trend}
-                  </div>
-                )}
               </div>
               <div style={{ fontSize: '28px', fontWeight: 700, color: 'white', lineHeight: 1 }}>{card.value}</div>
               <div style={{ fontSize: '13px', color: '#6b7f9e', marginTop: '6px', fontWeight: 500 }}>{card.label}</div>

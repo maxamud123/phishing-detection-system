@@ -1,22 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, Edit2, Trash2, Eye, Plus, X, AlertTriangle, ChevronUp, ChevronDown, ChevronsUpDown, Download } from 'lucide-react';
+import { Search, Filter, Trash2, Eye, Plus, X, AlertTriangle, ChevronUp, ChevronDown, ChevronsUpDown, Download } from 'lucide-react';
 import { ReportsAPI, Report, getUser, exportCSV } from '../lib/api';
-
-const cardStyle = {
-  backgroundColor: '#0d1225',
-  border: '1px solid #1a2040',
-  borderRadius: '16px',
-};
-
-const inputStyle: React.CSSProperties = {
-  backgroundColor: '#060b18',
-  border: '1px solid #1a2040',
-  borderRadius: '10px',
-  color: 'white',
-  fontSize: '13px',
-  outline: 'none',
-  padding: '9px 14px',
-};
+import { cardStyle, inputStyle } from '../lib/styles';
 
 export function Reports() {
   const [reports, setReports] = useState<Report[]>([]);

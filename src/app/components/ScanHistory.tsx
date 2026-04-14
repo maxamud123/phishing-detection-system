@@ -4,6 +4,7 @@ import {
   ChevronsUpDown, ChevronLeft, ChevronRight, X, Clock, Target, Zap, AlertTriangle,
 } from 'lucide-react';
 import { ScansAPI, Scan, exportCSV } from '../lib/api';
+import { cardStyle, inputStyle, getRiskStyle, getScoreColor } from '../lib/styles';
 
 interface HistoryEntry {
   id: string;
@@ -15,22 +16,6 @@ interface HistoryEntry {
   duration: string;
   redFlags: number;
 }
-
-const cardStyle = {
-  backgroundColor: '#0d1225',
-  border: '1px solid #1a2040',
-  borderRadius: '16px',
-};
-
-const inputStyle: React.CSSProperties = {
-  backgroundColor: '#060b18',
-  border: '1px solid #1a2040',
-  borderRadius: '10px',
-  color: 'white',
-  fontSize: '13px',
-  outline: 'none',
-  padding: '9px 14px',
-};
 
 // Map API Scan → local HistoryEntry
 function scanToEntry(s: Scan): HistoryEntry {
@@ -113,16 +98,6 @@ export function ScanHistory() {
     dangerous: history.filter(h => h.threatLevel === 'Dangerous').length,
   };
 
-  const getThreatStyle = (level: string) => {
-    switch (level) {
-      case 'Safe':       return { color: '#22c55e', backgroundColor: 'rgba(34,197,94,0.12)',  border: '1px solid rgba(34,197,94,0.3)' };
-      case 'Suspicious': return { color: '#fbbf24', backgroundColor: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.3)' };
-      case 'Dangerous':  return { color: '#ef4444', backgroundColor: 'rgba(239,68,68,0.12)',  border: '1px solid rgba(239,68,68,0.3)' };
-      default: return {};
-    }
-  };
-
-  const getScoreColor = (s: number) => s >= 40 ? '#ef4444' : s >= 15 ? '#fbbf24' : '#22c55e';
 
   const handleExportCSV = () => {
     exportCSV('scan-history.csv', filtered.map(h => ({
@@ -328,7 +303,7 @@ export function ScanHistory() {
                     </div>
                   </td>
                   <td className="py-3 px-3">
-                    <span className="px-2.5 py-1 rounded-lg text-xs font-semibold" style={getThreatStyle(entry.threatLevel)}>
+                    <span className="px-2.5 py-1 rounded-lg text-xs font-semibold" style={getRiskStyle(entry.threatLevel)}>
                       {entry.threatLevel}
                     </span>
                   </td>
@@ -447,7 +422,7 @@ export function ScanHistory() {
                   ? <Globe className="w-5 h-5" style={{ color: '#00d4ff' }} />
                   : <Mail className="w-5 h-5" style={{ color: '#a78bfa' }} />}
                 <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'white' }}>{selected.id}</h3>
-                <span className="px-2 py-0.5 rounded-lg text-xs font-semibold" style={getThreatStyle(selected.threatLevel)}>
+                <span className="px-2 py-0.5 rounded-lg text-xs font-semibold" style={getRiskStyle(selected.threatLevel)}>
                   {selected.threatLevel}
                 </span>
               </div>
