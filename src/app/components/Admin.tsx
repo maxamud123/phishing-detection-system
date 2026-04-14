@@ -1,22 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Users, FileText, Activity, Shield, Plus, Trash2, X, Check, Database, Cpu, Clock, HardDrive, ScrollText, RefreshCw, Lock, PowerOff, Power, WifiOff, Monitor } from 'lucide-react';
 import { UsersAPI, AdminAPI, SessionsAPI, User, AuditLog, ActiveSession } from '../lib/api';
-
-const cardStyle = {
-  backgroundColor: '#0d1225',
-  border: '1px solid #1a2040',
-  borderRadius: '16px',
-};
-
-const inputStyle: React.CSSProperties = {
-  backgroundColor: '#060b18',
-  border: '1px solid #1a2040',
-  borderRadius: '10px',
-  color: 'white',
-  fontSize: '13px',
-  outline: 'none',
-  padding: '9px 14px',
-};
+import { cardStyle, inputStyle } from '../lib/styles';
 
 const permissions = [
   { label: 'View Dashboard',     admin: true,  user: true  },
