@@ -4,16 +4,16 @@
  */
 
 export const cardStyle = {
-  backgroundColor: '#0d1225',
-  border: '1px solid #1a2040',
+  backgroundColor: '#2A0010',
+  border: '1px solid #4A001A',
   borderRadius: '16px',
 } as const;
 
 export const inputStyle: React.CSSProperties = {
-  backgroundColor: '#060b18',
-  border: '1px solid #1a2040',
+  backgroundColor: '#1E000A',
+  border: '1px solid #4A001A',
   borderRadius: '10px',
-  color: 'white',
+  color: '#F0D0D5',
   fontSize: '13px',
   outline: 'none',
   padding: '9px 14px',

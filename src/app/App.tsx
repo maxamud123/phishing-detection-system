@@ -83,10 +83,10 @@ function AccessDenied() {
 const tokens = {
   dark: {
     bg:            '#0a0e1a',
-    sidebar:       '#0d1225',
-    sidebarBorder: '#1a2040',
+    sidebar:       '#2A0010',
+    sidebarBorder: '#4A001A',
     header:        'rgba(13,18,37,0.95)',
-    headerBorder:  '#1a2040',
+    headerBorder:  '#4A001A',
     title:         'white',
     titleSub:      '#4a6080',
     navActive:     'rgba(0,212,255,0.1)',
@@ -95,10 +95,10 @@ const tokens = {
     navInactive:     '#6b7f9e',
     statusBg:      'rgba(0,255,128,0.06)',
     statusBorder:  'rgba(0,255,128,0.15)',
-    dropBg:        '#0d1225',
-    dropBorder:    '#1a2040',
+    dropBg:        '#2A0010',
+    dropBorder:    '#4A001A',
     dropHover:     'rgba(255,255,255,0.03)',
-    inputBg:       '#060b18',
+    inputBg:       '#1E000A',
     accent:        '#00d4ff',
   },
   light: {

@@ -7,14 +7,14 @@ import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { ScansAPI, ReportsAPI, Scan, Report } from '../lib/api';
 
 const cardStyle = {
-  backgroundColor: '#0d1225',
-  border: '1px solid #1a2040',
+  backgroundColor: '#2A0010',
+  border: '1px solid #4A001A',
   borderRadius: '16px',
 };
 
 const tooltipStyle: React.CSSProperties = {
-  backgroundColor: '#0d1225',
-  border: '1px solid #1a2040',
+  backgroundColor: '#2A0010',
+  border: '1px solid #4A001A',
   borderRadius: '10px',
   color: 'white',
   fontSize: '13px',
@@ -125,14 +125,14 @@ function buildTldData(scans: Scan[]) {
     } catch { /* skip malformed */ }
   });
   const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
-  const colors = ['#ef4444', '#00d4ff', '#fbbf24', '#a78bfa', '#4a6080'];
+  const colors = ['#ef4444', '#F0C0C8', '#fbbf24', '#C8909A', '#8B4555'];
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 4);
   const topTotal = sorted.reduce((a, [, v]) => a + v, 0);
   const result = sorted.map(([name, val], i) => ({
     name, value: Math.round(val / total * 100), color: colors[i],
   }));
   if (topTotal < total) result.push({ name: 'Other', value: Math.round((total - topTotal) / total * 100), color: colors[4] });
-  return result.length > 0 ? result : [{ name: 'No data', value: 100, color: '#4a6080' }];
+  return result.length > 0 ? result : [{ name: 'No data', value: 100, color: '#8B4555' }];
 }
 
 function buildSourcesData(reports: Report[]) {
@@ -164,20 +164,20 @@ function EvaluationMetrics({ scans, reports }: { scans: Scan[]; reports: Report[
   const matrixCells = [
     { label: 'True Positives (TP)',  value: tp,       color: '#22c55e', bg: 'rgba(34,197,94,0.1)',  desc: 'Correctly flagged threats'     },
     { label: 'False Positives (FP)', value: fp,       color: '#ef4444', bg: 'rgba(239,68,68,0.1)',  desc: 'Safe items wrongly flagged'    },
-    { label: 'True Negatives (TN)',  value: tn,       color: '#00d4ff', bg: 'rgba(0,212,255,0.1)',  desc: 'Correctly passed safe items'   },
+    { label: 'True Negatives (TN)',  value: tn,       color: '#F0C0C8', bg: 'rgba(240, 192, 200,0.1)',  desc: 'Correctly passed safe items'   },
     { label: 'False Negatives (FN)', value: pendingR, color: '#fbbf24', bg: 'rgba(251,191,36,0.1)', desc: 'Threats pending review'        },
   ];
 
   const metrics = [
     { label: 'Precision',        value: `${precision}%`, desc: 'TP / (TP + FP)',              color: '#22c55e' },
-    { label: 'Recall',           value: `${recall}%`,    desc: 'TP / (TP + FN)',              color: '#00d4ff' },
-    { label: 'F1 Score',         value: `${f1}%`,        desc: '2 × (P × R) / (P + R)',       color: '#a78bfa' },
+    { label: 'Recall',           value: `${recall}%`,    desc: 'TP / (TP + FN)',              color: '#F0C0C8' },
+    { label: 'F1 Score',         value: `${f1}%`,        desc: '2 × (P × R) / (P + R)',       color: '#C8909A' },
     { label: 'Total Detections', value: detected,        desc: `${dangerous} dangerous + ${suspicious} suspicious`, color: '#fbbf24' },
   ];
 
   const layers = [
-    { layer: 'Layer 1', name: 'Heuristic Analysis',      desc: 'URL structure, TLD risk, brand impersonation, path keywords',         color: '#00d4ff', coverage: 100 },
-    { layer: 'Layer 2', name: 'Typosquatting Detection', desc: 'Levenshtein distance vs. 15 popular brand domains',                   color: '#a78bfa', coverage: 100 },
+    { layer: 'Layer 1', name: 'Heuristic Analysis',      desc: 'URL structure, TLD risk, brand impersonation, path keywords',         color: '#F0C0C8', coverage: 100 },
+    { layer: 'Layer 2', name: 'Typosquatting Detection', desc: 'Levenshtein distance vs. 15 popular brand domains',                   color: '#C8909A', coverage: 100 },
     { layer: 'Layer 3', name: 'RDAP Domain Age',         desc: 'Domain registration date via public RDAP registry (no key required)', color: '#22c55e', coverage: 85  },
     { layer: 'Layer 4', name: 'Google Safe Browsing',    desc: 'Google real-time threat database (requires API key)',                  color: '#fbbf24', coverage: 70  },
     { layer: 'Layer 5', name: 'VirusTotal',              desc: '70+ AV engines check (requires API key)',                             color: '#ef4444', coverage: 60  },
@@ -187,17 +187,17 @@ function EvaluationMetrics({ scans, reports }: { scans: Scan[]; reports: Report[
     <div className="space-y-5">
       {/* Section divider */}
       <div className="flex items-center gap-3">
-        <div className="h-px flex-1" style={{ backgroundColor: '#1a2040' }} />
-        <span style={{ fontSize: '11px', color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>
+        <div className="h-px flex-1" style={{ backgroundColor: '#4A001A' }} />
+        <span style={{ fontSize: '11px', color: '#8B4555', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>
           Model Evaluation Metrics
         </span>
-        <div className="h-px flex-1" style={{ backgroundColor: '#1a2040' }} />
+        <div className="h-px flex-1" style={{ backgroundColor: '#4A001A' }} />
       </div>
 
       {/* Confusion Matrix */}
       <div className="p-5" style={cardStyle}>
         <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white' }}>Confusion Matrix</h3>
-        <p style={{ fontSize: '12px', color: '#4a6080', marginTop: '2px', marginBottom: '16px' }}>
+        <p style={{ fontSize: '12px', color: '#8B4555', marginTop: '2px', marginBottom: '16px' }}>
           Classification performance based on scan results vs. report verdicts
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -206,7 +206,7 @@ function EvaluationMetrics({ scans, reports }: { scans: Scan[]; reports: Report[
               style={{ backgroundColor: cell.bg, border: `1px solid ${cell.color}30` }}>
               <div style={{ fontSize: '32px', fontWeight: 800, color: cell.color, lineHeight: 1 }}>{cell.value}</div>
               <div style={{ fontSize: '12px', fontWeight: 700, color: cell.color, marginTop: '6px' }}>{cell.label}</div>
-              <div style={{ fontSize: '11px', color: '#4a6080', marginTop: '4px' }}>{cell.desc}</div>
+              <div style={{ fontSize: '11px', color: '#8B4555', marginTop: '4px' }}>{cell.desc}</div>
             </div>
           ))}
         </div>
@@ -216,13 +216,13 @@ function EvaluationMetrics({ scans, reports }: { scans: Scan[]; reports: Report[
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {metrics.map(m => (
           <div key={m.label} className="p-4 rounded-2xl" style={cardStyle}>
-            <p style={{ fontSize: '11px', color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+            <p style={{ fontSize: '11px', color: '#8B4555', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
               {m.label}
             </p>
             <p style={{ fontSize: '26px', fontWeight: 800, color: m.color, lineHeight: 1, marginTop: '8px' }}>{m.value}</p>
-            <p style={{ fontSize: '11px', color: '#4a6080', marginTop: '6px', fontFamily: 'monospace' }}>{m.desc}</p>
+            <p style={{ fontSize: '11px', color: '#8B4555', marginTop: '6px', fontFamily: 'monospace' }}>{m.desc}</p>
             {typeof m.value === 'string' && (
-              <div className="mt-2 w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1a2040' }}>
+              <div className="mt-2 w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#4A001A' }}>
                 <div className="h-1.5 rounded-full"
                   style={{ width: `${Math.min(100, parseFloat(m.value))}%`, backgroundColor: m.color, boxShadow: `0 0 6px ${m.color}` }} />
               </div>
@@ -234,26 +234,26 @@ function EvaluationMetrics({ scans, reports }: { scans: Scan[]; reports: Report[
       {/* Multi-Layer Detection Architecture */}
       <div className="p-5" style={cardStyle}>
         <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white' }}>Multi-Layer Detection Architecture</h3>
-        <p style={{ fontSize: '12px', color: '#4a6080', marginTop: '2px', marginBottom: '16px' }}>
+        <p style={{ fontSize: '12px', color: '#8B4555', marginTop: '2px', marginBottom: '16px' }}>
           Each layer independently contributes to the final threat score
         </p>
         <div className="space-y-3">
           {layers.map(l => (
             <div key={l.layer} className="flex items-center gap-4 px-4 py-3 rounded-xl"
-              style={{ backgroundColor: '#060b18', border: '1px solid #1a2040' }}>
+              style={{ backgroundColor: '#1E000A', border: '1px solid #4A001A' }}>
               <span className="px-2.5 py-1 rounded-lg text-xs font-bold shrink-0"
                 style={{ color: l.color, backgroundColor: `${l.color}18`, border: `1px solid ${l.color}30` }}>
                 {l.layer}
               </span>
               <div className="flex-1 min-w-0">
                 <div style={{ fontSize: '13px', fontWeight: 600, color: 'white' }}>{l.name}</div>
-                <div className="truncate" style={{ fontSize: '11px', color: '#4a6080', marginTop: '1px' }}>{l.desc}</div>
+                <div className="truncate" style={{ fontSize: '11px', color: '#8B4555', marginTop: '1px' }}>{l.desc}</div>
               </div>
               <div className="text-right shrink-0">
                 <div style={{ fontSize: '13px', fontWeight: 700, color: l.color }}>{l.coverage}%</div>
-                <div style={{ fontSize: '10px', color: '#4a6080' }}>coverage</div>
+                <div style={{ fontSize: '10px', color: '#8B4555' }}>coverage</div>
               </div>
-              <div className="w-20 h-1.5 rounded-full overflow-hidden shrink-0" style={{ backgroundColor: '#1a2040' }}>
+              <div className="w-20 h-1.5 rounded-full overflow-hidden shrink-0" style={{ backgroundColor: '#4A001A' }}>
                 <div className="h-1.5 rounded-full"
                   style={{ width: `${l.coverage}%`, backgroundColor: l.color, boxShadow: `0 0 6px ${l.color}` }} />
               </div>
@@ -309,7 +309,7 @@ export function Analytics() {
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
         {kpiData.map(k => (
           <div key={k.label} className="p-4 rounded-2xl transition-all hover:-translate-y-0.5 duration-200" style={cardStyle}>
-            <p style={{ fontSize: '11px', color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
+            <p style={{ fontSize: '11px', color: '#8B4555', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>
               {k.label}
             </p>
             <p style={{ fontSize: '28px', fontWeight: 800, color: 'white', lineHeight: 1, marginTop: '8px' }}>{k.value}</p>
@@ -322,7 +322,7 @@ export function Analytics() {
                   {k.change}
                 </span>
               )}
-              <span style={{ fontSize: '11px', color: '#4a6080' }}>{k.desc}</span>
+              <span style={{ fontSize: '11px', color: '#8B4555' }}>{k.desc}</span>
             </div>
           </div>
         ))}
@@ -333,11 +333,11 @@ export function Analytics() {
         <div className="flex items-start justify-between mb-4">
           <div>
             <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white' }}>Threat Trends</h3>
-            <p style={{ fontSize: '12px', color: '#4a6080', marginTop: '2px' }}>
+            <p style={{ fontSize: '12px', color: '#8B4555', marginTop: '2px' }}>
               Breakdown by classification · {periodLabels[period]}
             </p>
           </div>
-          <div className="flex p-1 rounded-xl gap-1" style={{ backgroundColor: '#060b18', border: '1px solid #1a2040' }}>
+          <div className="flex p-1 rounded-xl gap-1" style={{ backgroundColor: '#1E000A', border: '1px solid #4A001A' }}>
             {(['7d', '30d', '6m'] as Period[]).map(p => (
               <button
                 key={p}
@@ -345,8 +345,8 @@ export function Analytics() {
                 onClick={() => setPeriod(p)}
                 className="px-3 py-1.5 rounded-lg text-xs transition-all duration-200"
                 style={period === p
-                  ? { backgroundColor: 'rgba(0,212,255,0.15)', color: '#00d4ff', fontWeight: 700, border: '1px solid rgba(0,212,255,0.3)' }
-                  : { color: '#4a6080', border: '1px solid transparent' }}
+                  ? { backgroundColor: 'rgba(240, 192, 200,0.15)', color: '#F0C0C8', fontWeight: 700, border: '1px solid rgba(240, 192, 200,0.3)' }
+                  : { color: '#8B4555', border: '1px solid transparent' }}
               >
                 {p}
               </button>
@@ -354,28 +354,28 @@ export function Analytics() {
           </div>
         </div>
         <div className="flex gap-4 mb-4">
-          {[{ label: 'Dangerous', color: '#ef4444' }, { label: 'Suspicious', color: '#fbbf24' }, { label: 'Safe', color: '#00d4ff' }].map(l => (
+          {[{ label: 'Dangerous', color: '#ef4444' }, { label: 'Suspicious', color: '#fbbf24' }, { label: 'Safe', color: '#F0C0C8' }].map(l => (
             <div key={l.label} className="flex items-center gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: l.color }} />
-              <span style={{ fontSize: '12px', color: '#6b7f9e' }}>{l.label}</span>
+              <span style={{ fontSize: '12px', color: '#C8909A' }}>{l.label}</span>
             </div>
           ))}
         </div>
         <ResponsiveContainer width="100%" height={240}>
           <AreaChart data={threatTrend}>
             <defs>
-              {[['dangerGrad','#ef4444'], ['suspGrad','#fbbf24'], ['safeGrad','#00d4ff']].map(([id, color]) => (
+              {[['dangerGrad','#ef4444'], ['suspGrad','#fbbf24'], ['safeGrad','#F0C0C8']].map(([id, color]) => (
                 <linearGradient key={id} id={id} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%"  stopColor={color} stopOpacity={0.3} />
                   <stop offset="95%" stopColor={color} stopOpacity={0}   />
                 </linearGradient>
               ))}
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1a2040" vertical={false} />
-            <XAxis dataKey="month" tick={{ fill: '#6b7f9e', fontSize: 12 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: '#6b7f9e', fontSize: 12 }} axisLine={false} tickLine={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#4A001A" vertical={false} />
+            <XAxis dataKey="month" tick={{ fill: '#C8909A', fontSize: 12 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: '#C8909A', fontSize: 12 }} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
-            <Area type="monotone" dataKey="safe"       name="Safe"       stroke="#00d4ff" strokeWidth={2} fill="url(#safeGrad)"   dot={false} />
+            <Area type="monotone" dataKey="safe"       name="Safe"       stroke="#F0C0C8" strokeWidth={2} fill="url(#safeGrad)"   dot={false} />
             <Area type="monotone" dataKey="suspicious" name="Suspicious" stroke="#fbbf24" strokeWidth={2} fill="url(#suspGrad)"   dot={false} />
             <Area type="monotone" dataKey="dangerous"  name="Dangerous"  stroke="#ef4444" strokeWidth={2} fill="url(#dangerGrad)" dot={false} />
           </AreaChart>
@@ -386,22 +386,22 @@ export function Analytics() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="p-5" style={cardStyle}>
           <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white', marginBottom: '4px' }}>Hourly Scan Activity</h3>
-          <p style={{ fontSize: '12px', color: '#4a6080', marginBottom: '20px' }}>Today's scan distribution by hour</p>
+          <p style={{ fontSize: '12px', color: '#8B4555', marginBottom: '20px' }}>Today's scan distribution by hour</p>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={hourlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1a2040" vertical={false} />
-              <XAxis dataKey="hour" tick={{ fill: '#6b7f9e', fontSize: 11 }} axisLine={false} tickLine={false}
+              <CartesianGrid strokeDasharray="3 3" stroke="#4A001A" vertical={false} />
+              <XAxis dataKey="hour" tick={{ fill: '#C8909A', fontSize: 11 }} axisLine={false} tickLine={false}
                 tickFormatter={v => `${v}:00`} />
-              <YAxis tick={{ fill: '#6b7f9e', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,212,255,0.04)' }} />
-              <Bar dataKey="scans" name="Scans" fill="#00d4ff" radius={[4, 4, 0, 0]} fillOpacity={0.8} />
+              <YAxis tick={{ fill: '#C8909A', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(240, 192, 200,0.04)' }} />
+              <Bar dataKey="scans" name="Scans" fill="#F0C0C8" radius={[4, 4, 0, 0]} fillOpacity={0.8} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="p-5" style={cardStyle}>
           <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white', marginBottom: '4px' }}>Top Malicious TLDs</h3>
-          <p style={{ fontSize: '12px', color: '#4a6080', marginBottom: '8px' }}>Distribution of threat domains by TLD</p>
+          <p style={{ fontSize: '12px', color: '#8B4555', marginBottom: '8px' }}>Distribution of threat domains by TLD</p>
           <div className="flex items-center gap-4">
             <ResponsiveContainer width="50%" height={160}>
               <PieChart>
@@ -419,7 +419,7 @@ export function Analytics() {
                     <span style={{ fontSize: '12px', color: '#94a3b8', fontFamily: 'monospace' }}>{item.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-16 h-1 rounded-full overflow-hidden" style={{ backgroundColor: '#1a2040' }}>
+                    <div className="w-16 h-1 rounded-full overflow-hidden" style={{ backgroundColor: '#4A001A' }}>
                       <div className="h-1 rounded-full" style={{ width: `${item.value}%`, backgroundColor: item.color }} />
                     </div>
                     <span style={{ fontSize: '12px', fontWeight: 600, color: 'white', minWidth: '28px', textAlign: 'right' }}>
@@ -437,21 +437,21 @@ export function Analytics() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="p-5" style={cardStyle}>
           <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white', marginBottom: '4px' }}>Threats by Report Source</h3>
-          <p style={{ fontSize: '12px', color: '#4a6080', marginBottom: '20px' }}>Where phishing threats are being reported from</p>
+          <p style={{ fontSize: '12px', color: '#8B4555', marginBottom: '20px' }}>Where phishing threats are being reported from</p>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={sourcesData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#1a2040" horizontal={false} />
-              <XAxis type="number" tick={{ fill: '#6b7f9e', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#4A001A" horizontal={false} />
+              <XAxis type="number" tick={{ fill: '#C8909A', fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis dataKey="source" type="category" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} width={55} />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,212,255,0.04)' }} />
-              <Bar dataKey="count" name="Reports" fill="#a78bfa" radius={[0, 6, 6, 0]} fillOpacity={0.85} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(240, 192, 200,0.04)' }} />
+              <Bar dataKey="count" name="Reports" fill="#C8909A" radius={[0, 6, 6, 0]} fillOpacity={0.85} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="p-5" style={cardStyle}>
           <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white', marginBottom: '4px' }}>Scan Volume Over Time</h3>
-          <p style={{ fontSize: '12px', color: '#4a6080', marginBottom: '20px' }}>Total scans per period</p>
+          <p style={{ fontSize: '12px', color: '#8B4555', marginBottom: '20px' }}>Total scans per period</p>
           <ResponsiveContainer width="100%" height={180}>
             <LineChart data={threatTrend}>
               <defs>
@@ -460,11 +460,11 @@ export function Analytics() {
                   <stop offset="95%" stopColor="#22c55e" stopOpacity={0}   />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1a2040" vertical={false} />
-              <XAxis dataKey="month" tick={{ fill: '#6b7f9e', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#6b7f9e', fontSize: 12 }} axisLine={false} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#4A001A" vertical={false} />
+              <XAxis dataKey="month" tick={{ fill: '#C8909A', fontSize: 12 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#C8909A', fontSize: 12 }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
-              <Line type="monotone" dataKey="safe"       name="Safe"       stroke="#00d4ff" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="safe"       name="Safe"       stroke="#F0C0C8" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="suspicious" name="Suspicious" stroke="#fbbf24" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="dangerous"  name="Dangerous"  stroke="#ef4444" strokeWidth={2} dot={false} />
             </LineChart>
