@@ -557,7 +557,7 @@ export function Scanner() {
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
           <h2 style={{ fontSize: '20px', fontWeight: 700, color: 'white' }}>Threat Scanner</h2>
-          <p style={{ fontSize: '13px', color: '#C8909A', marginTop: '4px' }}>
+          <p style={{ fontSize: '13px', color: '#5A80A8', marginTop: '4px' }}>
             Multi-layer detection: heuristics + RDAP + VirusTotal + Google Safe Browsing
           </p>
         </div>
@@ -567,8 +567,8 @@ export function Scanner() {
             <button key={id} type="button" onClick={() => setMode(id)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all"
               style={mode === id
-                ? { backgroundColor: 'rgba(240, 192, 200,0.12)', color: '#F0C0C8', border: '1px solid rgba(240, 192, 200,0.3)', fontWeight: 600, fontSize: '12px' }
-                : { color: '#C8909A', border: '1px solid transparent', fontSize: '12px' }}>
+                ? { backgroundColor: 'rgba(122, 154, 184,0.12)', color: '#7A9AB8', border: '1px solid rgba(122, 154, 184,0.3)', fontWeight: 600, fontSize: '12px' }
+                : { color: '#5A80A8', border: '1px solid transparent', fontSize: '12px' }}>
               <Icon className="w-3.5 h-3.5" />{label}
             </button>
           ))}
@@ -593,21 +593,21 @@ export function Scanner() {
       {mode === 'bulk' && (
         <div className="p-6 space-y-5" style={cardStyle}>
           <div>
-            <label style={{ fontSize: '12px', color: '#C8909A', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <label style={{ fontSize: '12px', color: '#5A80A8', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Scan Type
             </label>
             <div className="flex mt-2 p-1 rounded-xl gap-2" style={{ backgroundColor: '#1E000A', border: '1px solid #4A001A' }}>
               {[{ type: 'url' as const, icon: Globe, label: 'URL' }, { type: 'email' as const, icon: Mail, label: 'Email' }].map(({ type, icon: Icon, label }) => (
                 <button key={type} type="button" onClick={() => setScanType(type)}
                   className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-all"
-                  style={scanType === type ? { backgroundColor: 'rgba(240, 192, 200,0.12)', color: '#F0C0C8', border: '1px solid rgba(240, 192, 200,0.3)', fontWeight: 600 } : { color: '#C8909A', border: '1px solid transparent' }}>
+                  style={scanType === type ? { backgroundColor: 'rgba(122, 154, 184,0.12)', color: '#7A9AB8', border: '1px solid rgba(122, 154, 184,0.3)', fontWeight: 600 } : { color: '#5A80A8', border: '1px solid transparent' }}>
                   <Icon className="w-4 h-4" /><span style={{ fontSize: '13px' }}>{label}</span>
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <label style={{ fontSize: '12px', color: '#C8909A', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <label style={{ fontSize: '12px', color: '#5A80A8', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Targets — one per line (max 50)
             </label>
             <textarea value={bulkText} onChange={e => setBulkText(e.target.value)} rows={8}
@@ -617,8 +617,8 @@ export function Scanner() {
           <button type="button" onClick={handleBulkScan} disabled={bulkLoading || !bulkText.trim()}
             className="w-full flex items-center justify-center gap-2 py-3 rounded-xl transition-all"
             style={bulkLoading || !bulkText.trim()
-              ? { backgroundColor: '#4A001A', color: '#8B4555', cursor: 'not-allowed' }
-              : { background: 'linear-gradient(135deg, #F0C0C8, #0099bb)', color: '#3A0015', fontWeight: 700, fontSize: '14px', boxShadow: '0 0 30px rgba(240, 192, 200,0.3)' }}>
+              ? { backgroundColor: '#4A001A', color: '#3A5A7A', cursor: 'not-allowed' }
+              : { background: 'linear-gradient(135deg, #7A9AB8, #0099bb)', color: '#3A0015', fontWeight: 700, fontSize: '14px', boxShadow: '0 0 30px rgba(122, 154, 184,0.3)' }}>
             {bulkLoading ? <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />Scanning...</> : <><Layers className="w-4 h-4" />Run Bulk Scan</>}
           </button>
 
@@ -628,7 +628,7 @@ export function Scanner() {
                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'white' }}>Results ({bulkResults.length} targets)</span>
                 <button type="button" onClick={exportBulkCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs"
-                  style={{ color: '#F0C0C8', backgroundColor: 'rgba(240, 192, 200,0.08)', border: '1px solid rgba(240, 192, 200,0.2)' }}>
+                  style={{ color: '#7A9AB8', backgroundColor: 'rgba(122, 154, 184,0.08)', border: '1px solid rgba(122, 154, 184,0.2)' }}>
                   <Download className="w-3.5 h-3.5" />Export CSV
                 </button>
               </div>
@@ -640,7 +640,7 @@ export function Scanner() {
                   return (
                     <div key={level} className="p-3 rounded-xl text-center" style={{ backgroundColor: '#1E000A', border: `1px solid ${color}30` }}>
                       <div style={{ fontSize: '22px', fontWeight: 800, color }}>{count}</div>
-                      <div style={{ fontSize: '11px', color: '#C8909A' }}>{level}</div>
+                      <div style={{ fontSize: '11px', color: '#5A80A8' }}>{level}</div>
                     </div>
                   );
                 })}
@@ -670,7 +670,7 @@ export function Scanner() {
       <div className="p-6 space-y-5" style={cardStyle}>
         {/* Toggle */}
         <div>
-          <label style={{ fontSize: '12px', color: '#C8909A', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <label style={{ fontSize: '12px', color: '#5A80A8', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Scan Type
           </label>
           <div
@@ -689,13 +689,13 @@ export function Scanner() {
                 style={
                   scanType === type
                     ? {
-                        backgroundColor: 'rgba(240, 192, 200, 0.12)',
-                        color: '#F0C0C8',
-                        border: '1px solid rgba(240, 192, 200, 0.3)',
-                        boxShadow: '0 0 15px rgba(240, 192, 200, 0.1)',
+                        backgroundColor: 'rgba(122, 154, 184, 0.12)',
+                        color: '#7A9AB8',
+                        border: '1px solid rgba(122, 154, 184, 0.3)',
+                        boxShadow: '0 0 15px rgba(122, 154, 184, 0.1)',
                         fontWeight: 600,
                       }
-                    : { color: '#C8909A', border: '1px solid transparent', fontWeight: 500 }
+                    : { color: '#5A80A8', border: '1px solid transparent', fontWeight: 500 }
                 }
               >
                 <Icon className="w-4 h-4" />
@@ -707,7 +707,7 @@ export function Scanner() {
 
         {/* Input */}
         <div>
-          <label style={{ fontSize: '12px', color: '#C8909A', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          <label style={{ fontSize: '12px', color: '#5A80A8', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             {scanType === 'url' ? 'Target URL' : 'Email Content'}
           </label>
           <div className="mt-2">
@@ -722,8 +722,8 @@ export function Scanner() {
                 placeholder="e.g. https://secure-login-paypal.xyz/verify-account"
                 style={{
                   ...inputStyle,
-                  borderColor: focusedInput ? 'rgba(240, 192, 200, 0.5)' : '#4A001A',
-                  boxShadow: focusedInput ? '0 0 0 3px rgba(240, 192, 200, 0.08)' : 'none',
+                  borderColor: focusedInput ? 'rgba(122, 154, 184, 0.5)' : '#4A001A',
+                  boxShadow: focusedInput ? '0 0 0 3px rgba(122, 154, 184, 0.08)' : 'none',
                 }}
               />
             ) : (
@@ -737,8 +737,8 @@ export function Scanner() {
                 style={{
                   ...inputStyle,
                   resize: 'none',
-                  borderColor: focusedInput ? 'rgba(240, 192, 200, 0.5)' : '#4A001A',
-                  boxShadow: focusedInput ? '0 0 0 3px rgba(240, 192, 200, 0.08)' : 'none',
+                  borderColor: focusedInput ? 'rgba(122, 154, 184, 0.5)' : '#4A001A',
+                  boxShadow: focusedInput ? '0 0 0 3px rgba(122, 154, 184, 0.08)' : 'none',
                   lineHeight: 1.6,
                 }}
               />
@@ -748,7 +748,7 @@ export function Scanner() {
 
         {/* Quick examples */}
         <div>
-          <p style={{ fontSize: '11px', color: '#8B4555', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <p style={{ fontSize: '11px', color: '#3A5A7A', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Quick examples
           </p>
           <div className="flex flex-wrap gap-2">
@@ -777,13 +777,13 @@ export function Scanner() {
           className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl transition-all duration-200"
           style={
             isScanning || !inputValue.trim()
-              ? { backgroundColor: '#4A001A', color: '#8B4555', cursor: 'not-allowed' }
+              ? { backgroundColor: '#4A001A', color: '#3A5A7A', cursor: 'not-allowed' }
               : {
-                  background: 'linear-gradient(135deg, #F0C0C8, #0099bb)',
+                  background: 'linear-gradient(135deg, #7A9AB8, #0099bb)',
                   color: '#3A0015',
                   fontWeight: 700,
                   fontSize: '14px',
-                  boxShadow: '0 0 30px rgba(240, 192, 200, 0.3)',
+                  boxShadow: '0 0 30px rgba(122, 154, 184, 0.3)',
                   cursor: 'pointer',
                 }
           }
@@ -808,27 +808,27 @@ export function Scanner() {
           <div className="flex items-center gap-3 mb-4">
             <div
               className="p-2 rounded-lg animate-pulse"
-              style={{ backgroundColor: 'rgba(240, 192, 200, 0.1)' }}
+              style={{ backgroundColor: 'rgba(122, 154, 184, 0.1)' }}
             >
-              <Shield className="w-5 h-5" style={{ color: '#F0C0C8' }} />
+              <Shield className="w-5 h-5" style={{ color: '#7A9AB8' }} />
             </div>
             <span style={{ fontSize: '14px', color: '#94a3b8' }}>Running heuristic analysis...</span>
-            <span style={{ marginLeft: 'auto', fontSize: '14px', fontWeight: 700, color: '#F0C0C8' }}>{scanProgress}%</span>
+            <span style={{ marginLeft: 'auto', fontSize: '14px', fontWeight: 700, color: '#7A9AB8' }}>{scanProgress}%</span>
           </div>
           <div className="w-full rounded-full h-1.5 overflow-hidden" style={{ backgroundColor: '#4A001A' }}>
             <div
               className="h-1.5 rounded-full transition-all duration-300"
               style={{
                 width: `${scanProgress}%`,
-                background: 'linear-gradient(90deg, #F0C0C8, #0099bb)',
-                boxShadow: '0 0 10px rgba(240, 192, 200, 0.5)',
+                background: 'linear-gradient(90deg, #7A9AB8, #0099bb)',
+                boxShadow: '0 0 10px rgba(122, 154, 184, 0.5)',
               }}
             />
           </div>
           <div className="mt-3 space-y-1">
             {scanSteps.filter(s => scanProgress >= s.threshold).map((s, i) => (
-              <p key={i} style={{ fontSize: '12px', color: '#8B4555' }}>
-                <span style={{ color: '#F0C0C8' }}>✓</span> {s.text}
+              <p key={i} style={{ fontSize: '12px', color: '#3A5A7A' }}>
+                <span style={{ color: '#7A9AB8' }}>✓</span> {s.text}
               </p>
             ))}
           </div>
@@ -861,7 +861,7 @@ export function Scanner() {
                       Threat Level:{' '}
                       <span style={{ color: config.color }}>{scanResult.threatLevel}</span>
                     </h3>
-                    <p style={{ fontSize: '12px', color: '#C8909A', marginTop: '2px' }}>
+                    <p style={{ fontSize: '12px', color: '#5A80A8', marginTop: '2px' }}>
                       {scanResult.scanType === 'url' ? 'URL' : 'Email'} scan completed on {new Date().toLocaleString()}
                     </p>
                   </div>
@@ -870,11 +870,11 @@ export function Scanner() {
                   <div style={{ fontSize: '36px', fontWeight: 800, color: config.color, lineHeight: 1 }}>
                     {scanResult.score}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#C8909A', marginTop: '2px' }}>Risk Score</div>
+                  <div style={{ fontSize: '11px', color: '#5A80A8', marginTop: '2px' }}>Risk Score</div>
                 </div>
               </div>
               <div>
-                <div className="flex justify-between mb-1.5" style={{ fontSize: '11px', color: '#8B4555' }}>
+                <div className="flex justify-between mb-1.5" style={{ fontSize: '11px', color: '#3A5A7A' }}>
                   <span>Safe (0)</span>
                   <span>Dangerous (100)</span>
                 </div>
@@ -942,7 +942,7 @@ export function Scanner() {
             {/* Technical Details */}
             <div className="p-5 rounded-2xl" style={cardStyle}>
               <div className="flex items-center gap-2 mb-4">
-                <Eye className="w-5 h-5" style={{ color: '#F0C0C8' }} />
+                <Eye className="w-5 h-5" style={{ color: '#7A9AB8' }} />
                 <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'white' }}>Technical Details</h4>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -952,7 +952,7 @@ export function Scanner() {
                     className="flex items-center justify-between p-3 rounded-xl"
                     style={{ backgroundColor: '#1E000A', border: '1px solid #4A001A' }}
                   >
-                    <span style={{ fontSize: '12px', color: '#C8909A' }}>{detail.label}</span>
+                    <span style={{ fontSize: '12px', color: '#5A80A8' }}>{detail.label}</span>
                     <span
                       className="px-2 py-0.5 rounded-lg text-xs"
                       style={getSeverityStyle(detail.severity)}
@@ -967,13 +967,13 @@ export function Scanner() {
             {/* Recommendations */}
             <div className="p-5 rounded-2xl" style={cardStyle}>
               <div className="flex items-center gap-2 mb-4">
-                <Shield className="w-5 h-5" style={{ color: '#F0C0C8' }} />
+                <Shield className="w-5 h-5" style={{ color: '#7A9AB8' }} />
                 <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'white' }}>Recommendations</h4>
               </div>
               <div className="space-y-2">
                 {scanResult.recommendations.map((rec, i) => (
-                  <div key={i} className="flex items-start gap-3 p-3 rounded-xl" style={{ backgroundColor: 'rgba(240, 192, 200, 0.04)', border: '1px solid rgba(240, 192, 200, 0.1)' }}>
-                    <span style={{ color: '#F0C0C8', flexShrink: 0, fontSize: '14px' }}>→</span>
+                  <div key={i} className="flex items-start gap-3 p-3 rounded-xl" style={{ backgroundColor: 'rgba(122, 154, 184, 0.04)', border: '1px solid rgba(122, 154, 184, 0.1)' }}>
+                    <span style={{ color: '#7A9AB8', flexShrink: 0, fontSize: '14px' }}>→</span>
                     <span style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.5 }}>{rec}</span>
                   </div>
                 ))}
@@ -983,12 +983,12 @@ export function Scanner() {
             {/* ── Threat Intelligence (external checks) ── */}
             <div className="p-5 rounded-2xl" style={cardStyle}>
               <div className="flex items-center gap-2 mb-4">
-                <Layers className="w-5 h-5" style={{ color: '#C8909A' }} />
+                <Layers className="w-5 h-5" style={{ color: '#5A80A8' }} />
                 <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'white' }}>Threat Intelligence</h4>
                 {externalLoading && (
                   <div className="flex items-center gap-1.5 ml-auto">
                     <div className="w-3 h-3 border-2 border-pink-300 border-t-transparent rounded-full animate-spin" />
-                    <span style={{ fontSize: '11px', color: '#C8909A' }}>Querying external sources…</span>
+                    <span style={{ fontSize: '11px', color: '#5A80A8' }}>Querying external sources…</span>
                   </div>
                 )}
               </div>
@@ -997,7 +997,7 @@ export function Scanner() {
                 <div className="space-y-2">
                   {['RDAP Domain Registry', 'Google Safe Browsing', 'VirusTotal'].map(src => (
                     <div key={src} className="flex items-center justify-between px-4 py-3 rounded-xl" style={{ backgroundColor: '#1E000A', border: '1px solid #4A001A' }}>
-                      <span style={{ fontSize: '13px', color: '#C8909A' }}>{src}</span>
+                      <span style={{ fontSize: '13px', color: '#5A80A8' }}>{src}</span>
                       <div className="w-3 h-3 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
                     </div>
                   ))}
@@ -1012,19 +1012,19 @@ export function Scanner() {
                       border: `1px solid ${externalResult.score >= 50 ? 'rgba(239,68,68,0.3)' : externalResult.score >= 20 ? 'rgba(251,191,36,0.3)' : 'rgba(34,197,94,0.3)'}` }}>
                     <div>
                       <span style={{ fontSize: '13px', fontWeight: 600, color: 'white' }}>Combined Score (all layers)</span>
-                      <p style={{ fontSize: '11px', color: '#C8909A', marginTop: '2px' }}>Local heuristics + external intelligence</p>
+                      <p style={{ fontSize: '11px', color: '#5A80A8', marginTop: '2px' }}>Local heuristics + external intelligence</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <span style={{ fontSize: '22px', fontWeight: 800, color: externalResult.score >= 50 ? '#ef4444' : externalResult.score >= 20 ? '#fbbf24' : '#22c55e' }}>
                         {externalResult.score}
                       </span>
-                      <span style={{ fontSize: '12px', color: '#C8909A' }}>/100</span>
+                      <span style={{ fontSize: '12px', color: '#5A80A8' }}>/100</span>
                     </div>
                   </div>
 
                   {/* External check rows */}
                   {externalResult.externalChecks.map((check, i) => {
-                    const resultColor = check.result === 'THREAT' ? '#ef4444' : check.result === 'WARNING' ? '#fbbf24' : check.result === 'CLEAN' ? '#22c55e' : '#C8909A';
+                    const resultColor = check.result === 'THREAT' ? '#ef4444' : check.result === 'WARNING' ? '#fbbf24' : check.result === 'CLEAN' ? '#22c55e' : '#5A80A8';
                     const resultBg    = check.result === 'THREAT' ? 'rgba(239,68,68,0.1)' : check.result === 'WARNING' ? 'rgba(251,191,36,0.1)' : check.result === 'CLEAN' ? 'rgba(34,197,94,0.1)' : 'rgba(148,163,184,0.08)';
                     return (
                       <div key={i} className="p-3 rounded-xl" style={{ backgroundColor: '#1E000A', border: '1px solid #4A001A' }}>
@@ -1034,19 +1034,19 @@ export function Scanner() {
                             <span className="px-2 py-0.5 rounded text-xs font-bold" style={{ color: resultColor, backgroundColor: resultBg }}>{check.result}</span>
                             {check.link && (
                               <a href={check.link} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="w-3.5 h-3.5" style={{ color: '#C8909A' }} />
+                                <ExternalLink className="w-3.5 h-3.5" style={{ color: '#5A80A8' }} />
                               </a>
                             )}
                           </div>
                         </div>
-                        <p style={{ fontSize: '11px', color: '#8B4555' }}>{check.detail}</p>
+                        <p style={{ fontSize: '11px', color: '#3A5A7A' }}>{check.detail}</p>
                       </div>
                     );
                   })}
 
                   {/* Risk factor breakdown */}
                   <div className="pt-2">
-                    <p style={{ fontSize: '11px', color: '#8B4555', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
+                    <p style={{ fontSize: '11px', color: '#3A5A7A', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
                       Risk Factor Breakdown
                     </p>
                     <div className="space-y-1.5">
@@ -1054,7 +1054,7 @@ export function Scanner() {
                         const color = f.severity === 'danger' ? '#ef4444' : f.severity === 'warning' ? '#fbbf24' : '#22c55e';
                         return (
                           <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-lg" style={{ backgroundColor: '#1E000A', border: '1px solid #4A001A' }}>
-                            <span className="shrink-0 px-1.5 py-0.5 rounded text-xs font-semibold" style={{ color: '#C8909A', backgroundColor: '#2A0010', border: '1px solid #4A001A', fontSize: '10px' }}>
+                            <span className="shrink-0 px-1.5 py-0.5 rounded text-xs font-semibold" style={{ color: '#5A80A8', backgroundColor: '#2A0010', border: '1px solid #4A001A', fontSize: '10px' }}>
                               {f.layer}
                             </span>
                             <span className="flex-1" style={{ fontSize: '12px', color: '#94a3b8' }}>{f.label}</span>
@@ -1070,7 +1070,7 @@ export function Scanner() {
               )}
 
               {!externalLoading && !externalResult && (
-                <p style={{ fontSize: '13px', color: '#8B4555' }}>Run a scan to see threat intelligence results.</p>
+                <p style={{ fontSize: '13px', color: '#3A5A7A' }}>Run a scan to see threat intelligence results.</p>
               )}
             </div>
           </div>

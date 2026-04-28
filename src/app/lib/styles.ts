@@ -13,7 +13,7 @@ export const inputStyle: React.CSSProperties = {
   backgroundColor: '#1E000A',
   border: '1px solid #4A001A',
   borderRadius: '10px',
-  color: '#F0D0D5',
+  color: '#C8DCF0',
   fontSize: '13px',
   outline: 'none',
   padding: '9px 14px',

@@ -24,8 +24,8 @@ interface Section {
 const CATEGORIES = ['All', 'Email', 'URL', 'Social Engineering', 'Mobile', 'Financial', 'Defense'];
 
 const categoryMeta: Record<string, { icon: any; color: string; bg: string; border: string }> = {
-  Email:              { icon: Mail,         color: '#C8909A', bg: 'rgba(200, 144, 154,0.1)',  border: 'rgba(200, 144, 154,0.3)'  },
-  URL:                { icon: Globe,        color: '#F0C0C8', bg: 'rgba(240, 192, 200,0.1)',    border: 'rgba(240, 192, 200,0.3)'    },
+  Email:              { icon: Mail,         color: '#5A80A8', bg: 'rgba(90, 128, 168,0.1)',  border: 'rgba(90, 128, 168,0.3)'  },
+  URL:                { icon: Globe,        color: '#7A9AB8', bg: 'rgba(122, 154, 184,0.1)',    border: 'rgba(122, 154, 184,0.3)'    },
   'Social Engineering':{ icon: Users,       color: '#fbbf24', bg: 'rgba(251,191,36,0.1)',  border: 'rgba(251,191,36,0.3)'   },
   Mobile:             { icon: Smartphone,   color: '#fb923c', bg: 'rgba(251,146,60,0.1)',   border: 'rgba(251,146,60,0.3)'   },
   Financial:          { icon: CreditCard,   color: '#ef4444', bg: 'rgba(239,68,68,0.1)',    border: 'rgba(239,68,68,0.3)'    },
@@ -345,7 +345,7 @@ export function KnowledgeBase() {
       {/* Header */}
       <div>
         <h2 style={{ fontSize: '20px', fontWeight: 700, color: 'white' }}>Knowledge Base</h2>
-        <p style={{ fontSize: '13px', color: '#C8909A', marginTop: '4px' }}>
+        <p style={{ fontSize: '13px', color: '#5A80A8', marginTop: '4px' }}>
           Learn about phishing techniques, attack vectors, and how to defend against them
         </p>
       </div>
@@ -353,7 +353,7 @@ export function KnowledgeBase() {
       {/* Stat Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Total Articles', value: stats.total,    color: '#F0C0C8', bg: 'rgba(240, 192, 200,0.08)',   border: 'rgba(240, 192, 200,0.2)'   },
+          { label: 'Total Articles', value: stats.total,    color: '#7A9AB8', bg: 'rgba(122, 154, 184,0.08)',   border: 'rgba(122, 154, 184,0.2)'   },
           { label: 'Beginner',       value: stats.beginner, color: '#22c55e', bg: 'rgba(34,197,94,0.08)',  border: 'rgba(34,197,94,0.2)'   },
           { label: 'Intermediate',   value: stats.inter,    color: '#fbbf24', bg: 'rgba(251,191,36,0.08)', border: 'rgba(251,191,36,0.2)'  },
           { label: 'Advanced',       value: stats.advanced, color: '#ef4444', bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.2)'   },
@@ -362,7 +362,7 @@ export function KnowledgeBase() {
             style={{ backgroundColor: s.bg, border: `1px solid ${s.border}` }}>
             <div>
               <div style={{ fontSize: '22px', fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
-              <div style={{ fontSize: '11px', color: '#C8909A', marginTop: '2px' }}>{s.label}</div>
+              <div style={{ fontSize: '11px', color: '#5A80A8', marginTop: '2px' }}>{s.label}</div>
             </div>
           </div>
         ))}
@@ -371,7 +371,7 @@ export function KnowledgeBase() {
       {/* Search + Category Filter */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#8B4555' }} />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#3A5A7A' }} />
           <input
             type="text"
             value={search}
@@ -403,15 +403,15 @@ export function KnowledgeBase() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all duration-200"
               style={active
                 ? {
-                    backgroundColor: meta ? meta.bg : 'rgba(240, 192, 200,0.12)',
-                    border: `1px solid ${meta ? meta.border : 'rgba(240, 192, 200,0.35)'}`,
-                    color: meta ? meta.color : '#F0C0C8',
+                    backgroundColor: meta ? meta.bg : 'rgba(122, 154, 184,0.12)',
+                    border: `1px solid ${meta ? meta.border : 'rgba(122, 154, 184,0.35)'}`,
+                    color: meta ? meta.color : '#7A9AB8',
                     fontWeight: 700,
                   }
                 : {
                     backgroundColor: 'rgba(255,255,255,0.03)',
                     border: '1px solid #4A001A',
-                    color: '#8B4555',
+                    color: '#3A5A7A',
                   }
               }
             >
@@ -424,7 +424,7 @@ export function KnowledgeBase() {
       </div>
 
       {/* Result count */}
-      <p style={{ fontSize: '12px', color: '#8B4555' }}>
+      <p style={{ fontSize: '12px', color: '#3A5A7A' }}>
         {filtered.length} article{filtered.length !== 1 ? 's' : ''}
         {category !== 'All' ? ` in ${category}` : ''}
         {search ? ` matching "${search}"` : ''}
@@ -433,7 +433,7 @@ export function KnowledgeBase() {
       {/* Articles */}
       <div className="space-y-3">
         {filtered.length === 0 && (
-          <div className="py-16 text-center" style={{ color: '#8B4555' }}>
+          <div className="py-16 text-center" style={{ color: '#3A5A7A' }}>
             <BookOpen className="w-10 h-10 mx-auto mb-3 opacity-30" />
             <p>No articles match your search.</p>
           </div>
@@ -471,7 +471,7 @@ export function KnowledgeBase() {
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span style={{ fontSize: '15px', fontWeight: 600, color: 'white' }}>{article.title}</span>
                   </div>
-                  <p style={{ fontSize: '13px', color: '#C8909A', lineHeight: 1.5 }}>{article.summary}</p>
+                  <p style={{ fontSize: '13px', color: '#5A80A8', lineHeight: 1.5 }}>{article.summary}</p>
                   <div className="flex flex-wrap items-center gap-2 mt-2">
                     <span
                       className="px-2 py-0.5 rounded-md text-xs font-semibold"
@@ -487,14 +487,14 @@ export function KnowledgeBase() {
                     </span>
                     {article.tags.slice(0, 3).map(tag => (
                       <span key={tag} className="flex items-center gap-1 px-2 py-0.5 rounded-md text-xs"
-                        style={{ color: '#8B4555', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid #4A001A' }}>
+                        style={{ color: '#3A5A7A', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid #4A001A' }}>
                         <Tag className="w-2.5 h-2.5" />{tag}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div className="shrink-0 mt-1" style={{ color: '#8B4555' }}>
+                <div className="shrink-0 mt-1" style={{ color: '#3A5A7A' }}>
                   {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                 </div>
               </button>

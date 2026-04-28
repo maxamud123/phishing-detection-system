@@ -156,8 +156,8 @@ export function Admin() {
 
   const getRoleStyle = (role: string) => {
     switch (role) {
-      case 'Admin': return { color: '#C8909A', backgroundColor: 'rgba(200, 144, 154, 0.12)', border: '1px solid rgba(200, 144, 154, 0.3)' };
-      default:      return { color: '#F0C0C8', backgroundColor: 'rgba(240, 192, 200, 0.12)', border: '1px solid rgba(240, 192, 200, 0.3)' };
+      case 'Admin': return { color: '#5A80A8', backgroundColor: 'rgba(90, 128, 168, 0.12)', border: '1px solid rgba(90, 128, 168, 0.3)' };
+      default:      return { color: '#7A9AB8', backgroundColor: 'rgba(122, 154, 184, 0.12)', border: '1px solid rgba(122, 154, 184, 0.3)' };
     }
   };
 
@@ -165,7 +165,7 @@ export function Admin() {
   const systemStats = [
     {
       label: 'Total Users',      value: dbStats ? String(dbStats.collections.users)          : '—',
-      icon: Users,    color: '#F0C0C8', bg: 'rgba(240, 192, 200, 0.1)',    border: 'rgba(240, 192, 200, 0.25)',
+      icon: Users,    color: '#7A9AB8', bg: 'rgba(122, 154, 184, 0.1)',    border: 'rgba(122, 154, 184, 0.25)',
     },
     {
       label: 'Active Sessions',  value: dbStats ? String(dbStats.collections.activeSessions) : '—',
@@ -173,7 +173,7 @@ export function Admin() {
     },
     {
       label: 'Total Scans',      value: dbStats ? String(dbStats.collections.scans)          : '—',
-      icon: Activity, color: '#C8909A', bg: 'rgba(200, 144, 154, 0.1)', border: 'rgba(200, 144, 154, 0.25)',
+      icon: Activity, color: '#5A80A8', bg: 'rgba(90, 128, 168, 0.1)', border: 'rgba(90, 128, 168, 0.25)',
     },
     {
       label: 'Audit Logs',       value: dbStats ? String(dbStats.collections.audit_logs)     : '—',
@@ -184,15 +184,15 @@ export function Admin() {
   const monitoring = [
     { label: 'Database Status',   value: dbStats?.connected ? 'Healthy' : 'Offline', icon: Database, color: dbStats?.connected ? '#22c55e' : '#ef4444', bg: dbStats?.connected ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239,68,68,0.1)', border: dbStats?.connected ? 'rgba(34, 197, 94, 0.25)' : 'rgba(239,68,68,0.25)', barPct: dbStats?.connected ? 100 : 0 },
     { label: 'API Response Time', value: '< 200ms',  icon: Cpu,       color: '#22c55e', bg: 'rgba(34, 197, 94, 0.1)',   border: 'rgba(34, 197, 94, 0.25)',   barPct: 95 },
-    { label: 'Active Sessions',   value: 'Live',     icon: Clock,     color: '#F0C0C8', bg: 'rgba(240, 192, 200, 0.1)',  border: 'rgba(240, 192, 200, 0.25)',   barPct: 75 },
+    { label: 'Active Sessions',   value: 'Live',     icon: Clock,     color: '#7A9AB8', bg: 'rgba(122, 154, 184, 0.1)',  border: 'rgba(122, 154, 184, 0.25)',   barPct: 75 },
     { label: 'Storage Used',      value: 'MongoDB',  icon: HardDrive, color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.1)', border: 'rgba(251, 191, 36, 0.25)',  barPct: 60 },
   ];
 
   const actionColor = (action: string) => {
     if (action.includes('DELETE')) return { color: '#ef4444', bg: 'rgba(239,68,68,0.1)' };
     if (action.includes('CREATE') || action.includes('SIGNUP')) return { color: '#22c55e', bg: 'rgba(34,197,94,0.1)' };
-    if (action.includes('LOGIN')) return { color: '#F0C0C8', bg: 'rgba(240, 192, 200,0.1)' };
-    return { color: '#C8909A', bg: 'rgba(200, 144, 154,0.1)' };
+    if (action.includes('LOGIN')) return { color: '#7A9AB8', bg: 'rgba(122, 154, 184,0.1)' };
+    return { color: '#5A80A8', bg: 'rgba(90, 128, 168,0.1)' };
   };
 
   return (
@@ -215,8 +215,8 @@ export function Admin() {
           <button key={id} type="button" onClick={() => setActiveSection(id)}
             className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all"
             style={activeSection === id
-              ? { backgroundColor: 'rgba(240, 192, 200,0.12)', color: '#F0C0C8', border: '1px solid rgba(240, 192, 200,0.3)', fontWeight: 600, fontSize: '13px' }
-              : { color: '#C8909A', border: '1px solid transparent', fontSize: '13px' }}>
+              ? { backgroundColor: 'rgba(122, 154, 184,0.12)', color: '#7A9AB8', border: '1px solid rgba(122, 154, 184,0.3)', fontWeight: 600, fontSize: '13px' }
+              : { color: '#5A80A8', border: '1px solid transparent', fontSize: '13px' }}>
             <Icon className="w-4 h-4" />{label}
           </button>
         ))}
@@ -237,7 +237,7 @@ export function Admin() {
                   <div style={{ fontSize: '22px', fontWeight: 800, color: 'white', lineHeight: 1 }}>
                     {loading ? '…' : s.value}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#C8909A', marginTop: '3px' }}>{s.label}</div>
+                  <div style={{ fontSize: '11px', color: '#5A80A8', marginTop: '3px' }}>{s.label}</div>
                 </div>
               </div>
             </div>
@@ -251,19 +251,19 @@ export function Admin() {
           <div className="flex items-center justify-between mb-5">
             <div>
               <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white' }}>Audit Log</h3>
-              <p style={{ fontSize: '12px', color: '#8B4555', marginTop: '2px' }}>All system actions — logins, scans, user changes, report updates</p>
+              <p style={{ fontSize: '12px', color: '#3A5A7A', marginTop: '2px' }}>All system actions — logins, scans, user changes, report updates</p>
             </div>
             <button type="button" onClick={fetchAuditLogs} disabled={auditLoading}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all"
-              style={{ color: '#F0C0C8', backgroundColor: 'rgba(240, 192, 200,0.08)', border: '1px solid rgba(240, 192, 200,0.2)', fontSize: '12px' }}>
+              style={{ color: '#7A9AB8', backgroundColor: 'rgba(122, 154, 184,0.08)', border: '1px solid rgba(122, 154, 184,0.2)', fontSize: '12px' }}>
               <RefreshCw className={`w-3.5 h-3.5 ${auditLoading ? 'animate-spin' : ''}`} />Refresh
             </button>
           </div>
 
           {auditLoading ? (
-            <div className="py-10 text-center" style={{ color: '#8B4555', fontSize: '14px' }}>Loading audit logs…</div>
+            <div className="py-10 text-center" style={{ color: '#3A5A7A', fontSize: '14px' }}>Loading audit logs…</div>
           ) : auditLogs.length === 0 ? (
-            <div className="py-10 text-center" style={{ color: '#8B4555', fontSize: '14px' }}>No audit logs found.</div>
+            <div className="py-10 text-center" style={{ color: '#3A5A7A', fontSize: '14px' }}>No audit logs found.</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full" style={{ borderCollapse: 'collapse', minWidth: '620px' }}>
@@ -271,7 +271,7 @@ export function Admin() {
                   <tr style={{ borderBottom: '1px solid #4A001A' }}>
                     {['Action', 'User', 'Details', 'Timestamp'].map(h => (
                       <th key={h} className="text-left py-3 px-3"
-                        style={{ fontSize: '11px', color: '#8B4555', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        style={{ fontSize: '11px', color: '#3A5A7A', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         {h}
                       </th>
                     ))}
@@ -292,9 +292,9 @@ export function Admin() {
                         </td>
                         <td className="py-3 px-3" style={{ fontSize: '12px', color: '#94a3b8' }}>{log.userName}</td>
                         <td className="py-3 px-3 max-w-xs">
-                          <span className="truncate block" style={{ fontSize: '12px', color: '#C8909A' }}>{log.details}</span>
+                          <span className="truncate block" style={{ fontSize: '12px', color: '#5A80A8' }}>{log.details}</span>
                         </td>
-                        <td className="py-3 px-3" style={{ fontSize: '11px', color: '#8B4555', whiteSpace: 'nowrap' }}>
+                        <td className="py-3 px-3" style={{ fontSize: '11px', color: '#3A5A7A', whiteSpace: 'nowrap' }}>
                           {new Date(log.timestamp).toLocaleString()}
                         </td>
                       </tr>
@@ -312,7 +312,7 @@ export function Admin() {
         <div className="flex items-center justify-between mb-5">
           <div>
             <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white' }}>User Management</h3>
-            <p style={{ fontSize: '12px', color: '#8B4555', marginTop: '2px' }}>
+            <p style={{ fontSize: '12px', color: '#3A5A7A', marginTop: '2px' }}>
               {loading ? 'Loading…' : `${users.length} total users`}
             </p>
           </div>
@@ -320,7 +320,7 @@ export function Admin() {
             type="button"
             onClick={() => setShowUserForm(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all hover:opacity-90"
-            style={{ background: 'linear-gradient(135deg, #F0C0C8, #0099bb)', color: '#3A0015', fontWeight: 700, fontSize: '13px', boxShadow: '0 0 20px rgba(240, 192, 200, 0.2)' }}
+            style={{ background: 'linear-gradient(135deg, #7A9AB8, #0099bb)', color: '#3A0015', fontWeight: 700, fontSize: '13px', boxShadow: '0 0 20px rgba(122, 154, 184, 0.2)' }}
           >
             <Plus className="w-4 h-4" />
             Add User
@@ -331,7 +331,7 @@ export function Admin() {
             <thead>
               <tr style={{ borderBottom: '1px solid #4A001A' }}>
                 {['Name', 'Email', 'Role', 'Logins', 'Last Login', 'Status', ''].map(h => (
-                  <th key={h} className="text-left py-3 px-3" style={{ fontSize: '11px', color: '#8B4555', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  <th key={h} className="text-left py-3 px-3" style={{ fontSize: '11px', color: '#3A5A7A', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     {h}
                   </th>
                 ))}
@@ -340,7 +340,7 @@ export function Admin() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center" style={{ color: '#8B4555', fontSize: '14px' }}>Loading users…</td>
+                  <td colSpan={5} className="py-10 text-center" style={{ color: '#3A5A7A', fontSize: '14px' }}>Loading users…</td>
                 </tr>
               ) : users.map(user => (
                 <tr key={user.userId}
@@ -351,22 +351,22 @@ export function Admin() {
                   <td className="py-3 px-3">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs shrink-0"
-                        style={{ background: 'linear-gradient(135deg, #F0C0C822, #F0C0C844)', color: '#F0C0C8', fontWeight: 700 }}>
+                        style={{ background: 'linear-gradient(135deg, #7A9AB822, #7A9AB844)', color: '#7A9AB8', fontWeight: 700 }}>
                         {user.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                       </div>
                       <span style={{ fontSize: '13px', color: 'white', fontWeight: 500 }}>{user.name}</span>
                     </div>
                   </td>
-                  <td className="py-3 px-3" style={{ fontSize: '12px', color: '#C8909A' }}>{user.email}</td>
+                  <td className="py-3 px-3" style={{ fontSize: '12px', color: '#5A80A8' }}>{user.email}</td>
                   <td className="py-3 px-3">
                     <span className="px-2 py-0.5 rounded-lg text-xs" style={{ ...getRoleStyle(user.role), fontWeight: 600 }}>
                       {user.role}
                     </span>
                   </td>
-                  <td className="py-3 px-3" style={{ fontSize: '12px', color: '#C8909A', textAlign: 'center' }}>
+                  <td className="py-3 px-3" style={{ fontSize: '12px', color: '#5A80A8', textAlign: 'center' }}>
                     {user.loginCount ?? 0}
                   </td>
-                  <td className="py-3 px-3" style={{ fontSize: '11px', color: '#8B4555' }}>
+                  <td className="py-3 px-3" style={{ fontSize: '11px', color: '#3A5A7A' }}>
                     {user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never'}
                   </td>
                   <td className="py-3 px-3">
@@ -378,7 +378,7 @@ export function Admin() {
                     <div className="flex gap-1">
                       <button type="button" onClick={() => { setResetTarget(user); setResetPwd(''); setResetErr(''); }}
                         className="p-1.5 rounded-lg transition-colors hover:bg-white/5"
-                        style={{ color: '#8B4555' }} title="Reset password" aria-label={`Reset password for ${user.name}`}>
+                        style={{ color: '#3A5A7A' }} title="Reset password" aria-label={`Reset password for ${user.name}`}>
                         <Lock className="w-3.5 h-3.5" />
                       </button>
                       {user.role !== 'Admin' && (
@@ -392,9 +392,9 @@ export function Admin() {
                       )}
                       <button type="button" onClick={() => handleDeleteUser(user.userId)}
                         className="p-1.5 rounded-lg transition-colors"
-                        style={{ color: '#8B4555' }}
+                        style={{ color: '#3A5A7A' }}
                         onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
-                        onMouseLeave={e => (e.currentTarget.style.color = '#8B4555')}
+                        onMouseLeave={e => (e.currentTarget.style.color = '#3A5A7A')}
                         title="Delete user" aria-label={`Delete user ${user.name}`}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -413,21 +413,21 @@ export function Admin() {
           <div className="flex items-center justify-between mb-5">
             <div>
               <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white' }}>Active Sessions</h3>
-              <p style={{ fontSize: '12px', color: '#8B4555', marginTop: '2px' }}>
+              <p style={{ fontSize: '12px', color: '#3A5A7A', marginTop: '2px' }}>
                 All currently logged-in sessions — click Terminate to force logout
               </p>
             </div>
             <button type="button" onClick={fetchSessions} disabled={sessionsLoading}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all"
-              style={{ color: '#F0C0C8', backgroundColor: 'rgba(240, 192, 200,0.08)', border: '1px solid rgba(240, 192, 200,0.2)', fontSize: '12px' }}>
+              style={{ color: '#7A9AB8', backgroundColor: 'rgba(122, 154, 184,0.08)', border: '1px solid rgba(122, 154, 184,0.2)', fontSize: '12px' }}>
               <RefreshCw className={`w-3.5 h-3.5 ${sessionsLoading ? 'animate-spin' : ''}`} />Refresh
             </button>
           </div>
 
           {sessionsLoading ? (
-            <div className="py-10 text-center" style={{ color: '#8B4555', fontSize: '14px' }}>Loading sessions…</div>
+            <div className="py-10 text-center" style={{ color: '#3A5A7A', fontSize: '14px' }}>Loading sessions…</div>
           ) : sessions.length === 0 ? (
-            <div className="py-10 text-center" style={{ color: '#8B4555', fontSize: '14px' }}>No active sessions.</div>
+            <div className="py-10 text-center" style={{ color: '#3A5A7A', fontSize: '14px' }}>No active sessions.</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full" style={{ borderCollapse: 'collapse', minWidth: '700px' }}>
@@ -435,7 +435,7 @@ export function Admin() {
                   <tr style={{ borderBottom: '1px solid #4A001A' }}>
                     {['User', 'Role', 'IP Address', 'Browser / Client', 'Logged In', 'Expires', ''].map(h => (
                       <th key={h} className="text-left py-3 px-3"
-                        style={{ fontSize: '11px', color: '#8B4555', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        style={{ fontSize: '11px', color: '#3A5A7A', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         {h}
                       </th>
                     ))}
@@ -464,23 +464,23 @@ export function Admin() {
                         onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}>
                         <td className="py-3 px-3">
                           <div style={{ fontSize: '13px', color: 'white', fontWeight: 500 }}>{s.name}</div>
-                          <div style={{ fontSize: '11px', color: '#8B4555' }}>{s.email}</div>
+                          <div style={{ fontSize: '11px', color: '#3A5A7A' }}>{s.email}</div>
                         </td>
                         <td className="py-3 px-3">
                           <span className="px-2 py-0.5 rounded-lg text-xs font-semibold"
                             style={s.role === 'Admin'
-                              ? { color: '#C8909A', backgroundColor: 'rgba(200, 144, 154,0.12)', border: '1px solid rgba(200, 144, 154,0.3)' }
-                              : { color: '#F0C0C8', backgroundColor: 'rgba(240, 192, 200,0.12)', border: '1px solid rgba(240, 192, 200,0.3)' }}>
+                              ? { color: '#5A80A8', backgroundColor: 'rgba(90, 128, 168,0.12)', border: '1px solid rgba(90, 128, 168,0.3)' }
+                              : { color: '#7A9AB8', backgroundColor: 'rgba(122, 154, 184,0.12)', border: '1px solid rgba(122, 154, 184,0.3)' }}>
                             {s.role}
                           </span>
                         </td>
-                        <td className="py-3 px-3" style={{ fontSize: '12px', color: '#C8909A', fontFamily: 'monospace' }}>
+                        <td className="py-3 px-3" style={{ fontSize: '12px', color: '#5A80A8', fontFamily: 'monospace' }}>
                           {s.ipAddress || '—'}
                         </td>
-                        <td className="py-3 px-3" style={{ fontSize: '12px', color: '#C8909A' }}>
+                        <td className="py-3 px-3" style={{ fontSize: '12px', color: '#5A80A8' }}>
                           {browser}{os ? ` / ${os}` : ''}
                         </td>
-                        <td className="py-3 px-3" style={{ fontSize: '11px', color: '#8B4555', whiteSpace: 'nowrap' }}>
+                        <td className="py-3 px-3" style={{ fontSize: '11px', color: '#3A5A7A', whiteSpace: 'nowrap' }}>
                           {new Date(s.createdAt).toLocaleString()}
                         </td>
                         <td className="py-3 px-3" style={{ fontSize: '11px', whiteSpace: 'nowrap', color: isExpired ? '#ef4444' : '#22c55e' }}>
@@ -543,8 +543,8 @@ export function Admin() {
             <table className="w-full" style={{ borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #4A001A' }}>
-                  <th className="text-left py-2 px-2" style={{ fontSize: '11px', color: '#8B4555', fontWeight: 600, width: '50%' }}>Permission</th>
-                  {[{ label: 'Admin', color: '#C8909A' }, { label: 'User', color: '#F0C0C8' }].map(({ label, color }) => (
+                  <th className="text-left py-2 px-2" style={{ fontSize: '11px', color: '#3A5A7A', fontWeight: 600, width: '50%' }}>Permission</th>
+                  {[{ label: 'Admin', color: '#5A80A8' }, { label: 'User', color: '#7A9AB8' }].map(({ label, color }) => (
                     <th key={label} className="text-center py-2 px-2" style={{ fontSize: '11px', color, fontWeight: 600 }}>{label}</th>
                   ))}
                 </tr>
@@ -582,7 +582,7 @@ export function Admin() {
           <div className="w-full max-w-md admin-modal-card">
             <div className="flex items-center justify-between mb-6">
               <h3 className="admin-modal-title">Add New User</h3>
-              <button type="button" aria-label="Close" onClick={() => setShowUserForm(false)} className="p-2 rounded-lg hover:bg-white/5 transition-colors" style={{ color: '#C8909A' }}>
+              <button type="button" aria-label="Close" onClick={() => setShowUserForm(false)} className="p-2 rounded-lg hover:bg-white/5 transition-colors" style={{ color: '#5A80A8' }}>
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -593,15 +593,15 @@ export function Admin() {
             )}
             <form className="space-y-4" onSubmit={handleAddUser}>
               <div>
-                <label style={{ fontSize: '12px', color: '#C8909A', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Full Name</label>
+                <label style={{ fontSize: '12px', color: '#5A80A8', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Full Name</label>
                 <input type="text" value={formName} onChange={e => setFormName(e.target.value)} placeholder="Enter full name" style={{ ...inputStyle, width: '100%' }} required />
               </div>
               <div>
-                <label style={{ fontSize: '12px', color: '#C8909A', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Email Address</label>
+                <label style={{ fontSize: '12px', color: '#5A80A8', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Email Address</label>
                 <input type="email" value={formEmail} onChange={e => setFormEmail(e.target.value)} placeholder="Enter email" style={{ ...inputStyle, width: '100%' }} required />
               </div>
               <div>
-                <label style={{ fontSize: '12px', color: '#C8909A', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Password</label>
+                <label style={{ fontSize: '12px', color: '#5A80A8', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Password</label>
                 <input type="password" value={formPassword} onChange={e => setFormPassword(e.target.value)} placeholder="Min 6 characters" style={{ ...inputStyle, width: '100%' }} required minLength={6} />
               </div>
               <div className="flex gap-3 pt-2">
@@ -627,13 +627,13 @@ export function Admin() {
                 <h3 className="admin-modal-title">Reset Password</h3>
                 <p className="admin-modal-sub">{resetTarget.name}</p>
               </div>
-              <button type="button" onClick={() => setResetTarget(null)} className="p-2 rounded-lg hover:bg-white/5" style={{ color: '#C8909A' }} aria-label="Close">
+              <button type="button" onClick={() => setResetTarget(null)} className="p-2 rounded-lg hover:bg-white/5" style={{ color: '#5A80A8' }} aria-label="Close">
                 <X className="w-4 h-4" />
               </button>
             </div>
             <form onSubmit={handleResetPassword} className="space-y-4">
               <div>
-                <label style={{ fontSize: '12px', color: '#C8909A', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>New Password</label>
+                <label style={{ fontSize: '12px', color: '#5A80A8', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>New Password</label>
                 <input type="password" value={resetPwd} onChange={e => setResetPwd(e.target.value)}
                   placeholder="Min 6 characters" style={{ ...inputStyle, width: '100%' }} required minLength={6} autoFocus />
               </div>

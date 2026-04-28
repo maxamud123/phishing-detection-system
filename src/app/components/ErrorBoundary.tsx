@@ -18,13 +18,13 @@ export class ErrorBoundary extends Component<Props, State> {
           <p style={{ fontSize: '15px', fontWeight: 700, color: '#ef4444', marginBottom: '8px' }}>
             Something went wrong
           </p>
-          <p style={{ fontSize: '13px', color: '#8B4555', marginBottom: '16px' }}>
+          <p style={{ fontSize: '13px', color: '#3A5A7A', marginBottom: '16px' }}>
             {this.state.message || 'An unexpected error occurred in this section.'}
           </p>
           <button
             onClick={() => this.setState({ hasError: false, message: '' })}
             className="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
-            style={{ background: 'rgba(240, 192, 200,0.1)', border: '1px solid rgba(240, 192, 200,0.3)', color: '#F0C0C8' }}>
+            style={{ background: 'rgba(122, 154, 184,0.1)', border: '1px solid rgba(122, 154, 184,0.3)', color: '#7A9AB8' }}>
             Try Again
           </button>
         </div>

@@ -32,7 +32,7 @@ export function Profile() {
     return s;
   })();
   const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong'][pwdStrength];
-  const strengthColor = ['', '#ef4444', '#f59e0b', '#22c55e', '#F0C0C8'][pwdStrength];
+  const strengthColor = ['', '#ef4444', '#f59e0b', '#22c55e', '#7A9AB8'][pwdStrength];
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,28 +93,28 @@ export function Profile() {
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
-          style={{ background: 'linear-gradient(135deg, rgba(240, 192, 200,0.15), rgba(240, 192, 200,0.3))', border: '1px solid rgba(240, 192, 200,0.3)' }}>
-          <User className="w-6 h-6" style={{ color: '#F0C0C8' }} />
+          style={{ background: 'linear-gradient(135deg, rgba(122, 154, 184,0.15), rgba(122, 154, 184,0.3))', border: '1px solid rgba(122, 154, 184,0.3)' }}>
+          <User className="w-6 h-6" style={{ color: '#7A9AB8' }} />
         </div>
         <div>
           <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'white' }}>My Profile</h2>
-          <p style={{ fontSize: '13px', color: '#8B4555' }}>Manage your account details and password</p>
+          <p style={{ fontSize: '13px', color: '#3A5A7A' }}>Manage your account details and password</p>
         </div>
       </div>
 
       {/* Role badge */}
       <div style={{ ...card, marginBottom: '16px' }}>
         <div className="flex items-center gap-3">
-          <Shield className="w-5 h-5" style={{ color: currentUser?.role === 'Admin' ? '#C8909A' : '#F0C0C8' }} />
+          <Shield className="w-5 h-5" style={{ color: currentUser?.role === 'Admin' ? '#5A80A8' : '#7A9AB8' }} />
           <div>
-            <p style={{ fontSize: '12px', color: '#8B4555', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Role</p>
-            <p style={{ fontSize: '14px', fontWeight: 600, color: currentUser?.role === 'Admin' ? '#C8909A' : '#F0C0C8' }}>
+            <p style={{ fontSize: '12px', color: '#3A5A7A', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Role</p>
+            <p style={{ fontSize: '14px', fontWeight: 600, color: currentUser?.role === 'Admin' ? '#5A80A8' : '#7A9AB8' }}>
               {currentUser?.role}
             </p>
           </div>
           {currentUser?.lastLogin && (
             <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-              <p style={{ fontSize: '12px', color: '#8B4555', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Last Login</p>
+              <p style={{ fontSize: '12px', color: '#3A5A7A', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Last Login</p>
               <p style={{ fontSize: '13px', color: '#94a3b8' }}>
                 {new Date(currentUser.lastLogin).toLocaleString()}
               </p>
@@ -128,9 +128,9 @@ export function Profile() {
         <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white', marginBottom: '16px' }}>Account Information</h3>
         <form onSubmit={handleProfileSave} className="space-y-4">
           <div>
-            <label style={{ fontSize: '11px', color: '#C8909A', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>Full Name</label>
+            <label style={{ fontSize: '11px', color: '#5A80A8', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>Full Name</label>
             <div className="relative">
-              <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#8B4555' }} />
+              <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#3A5A7A' }} />
               <input
                 type="text" value={name} onChange={e => setName(e.target.value)}
                 style={{ ...inputStyle, paddingLeft: '36px' }} required
@@ -138,9 +138,9 @@ export function Profile() {
             </div>
           </div>
           <div>
-            <label style={{ fontSize: '11px', color: '#C8909A', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>Email Address</label>
+            <label style={{ fontSize: '11px', color: '#5A80A8', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>Email Address</label>
             <div className="relative">
-              <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#8B4555' }} />
+              <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#3A5A7A' }} />
               <input
                 type="email" value={email} onChange={e => setEmail(e.target.value)}
                 style={{ ...inputStyle, paddingLeft: '36px' }} required
@@ -163,7 +163,7 @@ export function Profile() {
 
           <button type="submit" disabled={profileSaving}
             className="px-5 py-2 rounded-xl transition-all"
-            style={{ background: 'linear-gradient(135deg, #F0C0C8, #0099bb)', color: '#3A0015', fontWeight: 700, fontSize: '13px', opacity: profileSaving ? 0.6 : 1 }}>
+            style={{ background: 'linear-gradient(135deg, #7A9AB8, #0099bb)', color: '#3A0015', fontWeight: 700, fontSize: '13px', opacity: profileSaving ? 0.6 : 1 }}>
             {profileSaving ? 'Saving…' : 'Save Changes'}
           </button>
         </form>
@@ -174,32 +174,32 @@ export function Profile() {
         <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white', marginBottom: '16px' }}>Change Password</h3>
         <form onSubmit={handlePasswordSave} className="space-y-4">
           <div>
-            <label style={{ fontSize: '11px', color: '#C8909A', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>Current Password</label>
+            <label style={{ fontSize: '11px', color: '#5A80A8', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>Current Password</label>
             <div className="relative">
-              <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#8B4555' }} />
+              <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#3A5A7A' }} />
               <input
                 type={showCur ? 'text' : 'password'} value={currentPwd}
                 onChange={e => setCurrentPwd(e.target.value)}
                 style={{ ...inputStyle, paddingLeft: '36px', paddingRight: '36px' }} required
               />
               <button type="button" onClick={() => setShowCur(!showCur)}
-                className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#8B4555' }}>
+                className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#3A5A7A' }}>
                 {showCur ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
           <div>
-            <label style={{ fontSize: '11px', color: '#C8909A', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>New Password</label>
+            <label style={{ fontSize: '11px', color: '#5A80A8', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>New Password</label>
             <div className="relative">
-              <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#8B4555' }} />
+              <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#3A5A7A' }} />
               <input
                 type={showNew ? 'text' : 'password'} value={newPwd}
                 onChange={e => setNewPwd(e.target.value)}
                 style={{ ...inputStyle, paddingLeft: '36px', paddingRight: '36px' }} required
               />
               <button type="button" onClick={() => setShowNew(!showNew)}
-                className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#8B4555' }}>
+                className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#3A5A7A' }}>
                 {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
@@ -217,9 +217,9 @@ export function Profile() {
           </div>
 
           <div>
-            <label style={{ fontSize: '11px', color: '#C8909A', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>Confirm New Password</label>
+            <label style={{ fontSize: '11px', color: '#5A80A8', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>Confirm New Password</label>
             <div className="relative">
-              <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#8B4555' }} />
+              <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#3A5A7A' }} />
               <input
                 type="password" value={confirmPwd}
                 onChange={e => setConfirmPwd(e.target.value)}
@@ -247,7 +247,7 @@ export function Profile() {
 
           <button type="submit" disabled={pwdSaving}
             className="px-5 py-2 rounded-xl transition-all"
-            style={{ background: 'linear-gradient(135deg, #C8909A, #5C0020)', color: 'white', fontWeight: 700, fontSize: '13px', opacity: pwdSaving ? 0.6 : 1 }}>
+            style={{ background: 'linear-gradient(135deg, #5A80A8, #5C0020)', color: 'white', fontWeight: 700, fontSize: '13px', opacity: pwdSaving ? 0.6 : 1 }}>
             {pwdSaving ? 'Changing…' : 'Change Password'}
           </button>
         </form>

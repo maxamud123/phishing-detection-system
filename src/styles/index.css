@@ -17,12 +17,12 @@ button:active:not(:disabled) {
 /* Only the layout chrome (bg, sidebar, header) changes.                     */
 /* Data cards stay dark — the standard SOC / analytics dashboard pattern.    */
 .light-theme {
-  background-color: #F5E0E4;
+  background-color: #D0E4F5;
   color: #3A0015;
 }
 .light-theme .topbar {
   background-color: rgba(255, 245, 247, 0.95) !important;
-  border-bottom-color: #EDCAD0 !important;
+  border-bottom-color: #B8D0EA !important;
 }
 .light-theme .sidebar-shell {
   background-color: #5C0020 !important;
@@ -36,7 +36,7 @@ button:active:not(:disabled) {
 
 /* ── Notification / search dropdown shadows ──────────────────────────────── */
 .dropdown-shadow {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(200, 144, 154, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(90, 128, 168, 0.12);
 }
 .light-theme .dropdown-shadow {
   box-shadow: 0 8px 32px rgba(92, 0, 32, 0.15), 0 0 0 1px rgba(92, 0, 32, 0.08);
@@ -69,11 +69,11 @@ button:active:not(:disabled) {
 .admin-modal-title {
   font-size: 16px;
   font-weight: 700;
-  color: #F0D0D5;
+  color: #C8DCF0;
 }
 .admin-modal-sub {
   font-size: 12px;
-  color: #C8909A;
+  color: #5A80A8;
   margin-top: 2px;
 }
 .admin-modal-error {
@@ -81,13 +81,13 @@ button:active:not(:disabled) {
   color: #ef4444;
 }
 .admin-modal-btn-primary {
-  background: linear-gradient(135deg, #C8909A, #5C0020);
+  background: linear-gradient(135deg, #5A80A8, #5C0020);
   color: white;
   font-weight: 700;
   font-size: 13px;
 }
 .admin-modal-btn-cancel {
-  color: #C8909A;
+  color: #5A80A8;
   border: 1px solid #4A001A;
   font-size: 13px;
 }
@@ -110,7 +110,7 @@ button:active:not(:disabled) {
   background-color: #1E000A;
 }
 .light-theme .user-chip {
-  border-color: #EDCAD0;
+  border-color: #B8D0EA;
   background-color: rgba(255, 245, 247, 0.9);
 }
 
@@ -144,7 +144,7 @@ button:active:not(:disabled) {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(200, 144, 154, 0.2) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(90, 128, 168, 0.2) 50%, transparent 100%);
   transform: translateX(-100%);
   animation: skeleton-shimmer 1.6s linear infinite;
 }
@@ -154,5 +154,5 @@ button:active:not(:disabled) {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #4A001A; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #7A1535; }
-.light-theme ::-webkit-scrollbar-thumb { background: #D4A0AA; }
-.light-theme ::-webkit-scrollbar-thumb:hover { background: #C8909A; }
+.light-theme ::-webkit-scrollbar-thumb { background: #7A9AB8; }
+.light-theme ::-webkit-scrollbar-thumb:hover { background: #5A80A8; }
