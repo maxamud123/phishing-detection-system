@@ -16,6 +16,7 @@ import { Profile } from './components/Profile';
 import { Login } from './components/Login';
 import { Signup } from './components/Signup';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { ChatBox } from './components/ChatBox';
 import { AuthAPI, getUser, getToken, clearSession } from './lib/api';
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -645,6 +646,9 @@ export default function App() {
           </ErrorBoundary>
         </main>
       </div>
+
+      {/* ── AI Chatbox (floating, always visible when logged in) ───────── */}
+      <ChatBox />
     </div>
   );
 }

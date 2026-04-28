@@ -252,6 +252,73 @@ async function sendThreatAlert(scan) {
   }
 }
 
+// ─── AI Chat ─────────────────────────────────────────────────────────────────
+const https = require('https');
+
+async function chatWithAI(req, res) {
+  const actor = await requireAuth(req, res);
+  if (!actor) return;
+
+  const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || '';
+  if (!ANTHROPIC_KEY) {
+    return jsonError(res, 503, 'AI chat not configured. Add ANTHROPIC_API_KEY to server/.env');
+  }
+
+  const body = await parseBody(req);
+  if (body.__tooLarge) return jsonError(res, 413, 'Request too large.');
+  const { messages } = body;
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return jsonError(res, 400, 'messages array required.');
+  }
+
+  const cleaned = messages.slice(-20).map(m => ({
+    role: m.role === 'assistant' ? 'assistant' : 'user',
+    content: String(m.content || '').slice(0, 2000),
+  }));
+
+  const payload = JSON.stringify({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1024,
+    system: `You are PhishGuard AI, a cybersecurity assistant embedded in the PhishGuard phishing detection platform. Help users understand phishing threats, interpret scan results, explain detection techniques, and give practical security advice. Be concise, friendly, and security-focused. If asked something unrelated to security, gently redirect to security topics.`,
+    messages: cleaned,
+  });
+
+  try {
+    const result = await new Promise((resolve, reject) => {
+      const opts = {
+        hostname: 'api.anthropic.com',
+        path: '/v1/messages',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': ANTHROPIC_KEY,
+          'anthropic-version': '2023-06-01',
+          'Content-Length': Buffer.byteLength(payload),
+        },
+      };
+      const r = https.request(opts, resp => {
+        let data = '';
+        resp.on('data', c => data += c);
+        resp.on('end', () => {
+          try { resolve({ status: resp.statusCode, body: JSON.parse(data) }); }
+          catch { resolve({ status: resp.statusCode, body: { error: { message: data } } }); }
+        });
+      });
+      r.on('error', reject);
+      r.write(payload);
+      r.end();
+    });
+
+    if (result.status !== 200) {
+      return jsonError(res, 502, result.body?.error?.message || 'AI service error.');
+    }
+    const reply = result.body.content?.[0]?.text || 'No response received.';
+    jsonOk(res, { reply });
+  } catch (err) {
+    jsonError(res, 502, 'Failed to reach AI service: ' + err.message);
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 //  AUTH ROUTES
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -857,6 +924,9 @@ const server = http.createServer((req, res) => {
   if (url === '/api/sessions' && method === 'GET') return getActiveSessions(req, res);
   const sessMatch = url.match(/^\/api\/sessions\/([^/]+)$/);
   if (sessMatch && method === 'DELETE') return killSession(req, res, sessMatch[1]);
+
+  // ── AI Chat ──
+  if (url === '/api/chat' && method === 'POST') return chatWithAI(req, res);
 
   // ── Unknown ──
   res.writeHead(404, { 'Content-Type': 'application/json' });
