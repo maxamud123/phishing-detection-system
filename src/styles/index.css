@@ -17,29 +17,29 @@ button:active:not(:disabled) {
 /* Only the layout chrome (bg, sidebar, header) changes.                     */
 /* Data cards stay dark — the standard SOC / analytics dashboard pattern.    */
 .light-theme {
-  background-color: #f0f4f8;
-  color: #0f172a;
+  background-color: #F5E0E4;
+  color: #3A0015;
 }
 .light-theme .topbar {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  border-bottom-color: #e2e8f0 !important;
+  background-color: rgba(255, 245, 247, 0.95) !important;
+  border-bottom-color: #EDCAD0 !important;
 }
 .light-theme .sidebar-shell {
-  background-color: #ffffff !important;
-  border-right-color: #e2e8f0 !important;
+  background-color: #5C0020 !important;
+  border-right-color: #4A001A !important;
 }
 .light-theme .main-grid-bg {
   background-image:
-    linear-gradient(rgba(0, 150, 180, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 150, 180, 0.04) 1px, transparent 1px) !important;
+    linear-gradient(rgba(92, 0, 32, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92, 0, 32, 0.04) 1px, transparent 1px) !important;
 }
 
 /* ── Notification / search dropdown shadows ──────────────────────────────── */
 .dropdown-shadow {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 212, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(200, 144, 154, 0.12);
 }
 .light-theme .dropdown-shadow {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 32px rgba(92, 0, 32, 0.15), 0 0 0 1px rgba(92, 0, 32, 0.08);
 }
 
 /* ── Access Denied ───────────────────────────────────────────────────────── */
@@ -56,24 +56,24 @@ button:active:not(:disabled) {
 
 /* ── Admin modals ────────────────────────────────────────────────────────── */
 .admin-modal-overlay {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(30, 0, 10, 0.85);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 .admin-modal-card {
-  background-color: #0d1225;
-  border: 1px solid #1a2040;
+  background-color: #2A0010;
+  border: 1px solid #4A001A;
   border-radius: 16px;
   padding: 24px;
 }
 .admin-modal-title {
   font-size: 16px;
   font-weight: 700;
-  color: white;
+  color: #F0D0D5;
 }
 .admin-modal-sub {
   font-size: 12px;
-  color: #4a6080;
+  color: #C8909A;
   margin-top: 2px;
 }
 .admin-modal-error {
@@ -81,14 +81,14 @@ button:active:not(:disabled) {
   color: #ef4444;
 }
 .admin-modal-btn-primary {
-  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  background: linear-gradient(135deg, #C8909A, #5C0020);
   color: white;
   font-weight: 700;
   font-size: 13px;
 }
 .admin-modal-btn-cancel {
-  color: #6b7f9e;
-  border: 1px solid #1a2040;
+  color: #C8909A;
+  border: 1px solid #4A001A;
   font-size: 13px;
 }
 
@@ -106,24 +106,24 @@ button:active:not(:disabled) {
 
 /* ── User chip (topbar) ──────────────────────────────────────────────────── */
 .user-chip {
-  border: 1px solid #1a2040;
-  background-color: #060b18;
+  border: 1px solid #4A001A;
+  background-color: #1E000A;
 }
 .light-theme .user-chip {
-  border-color: #e2e8f0;
-  background-color: rgba(255,255,255,0.9);
+  border-color: #EDCAD0;
+  background-color: rgba(255, 245, 247, 0.9);
 }
 
 /* ── Skeleton card wrappers ──────────────────────────────────────────────── */
 .skeleton-card {
-  background-color: #0d1225;
-  border: 1px solid #1a2040;
+  background-color: #2A0010;
+  border: 1px solid #4A001A;
   border-radius: 16px;
   padding: 20px;
 }
 .skeleton-card-tall {
-  background-color: #0d1225;
-  border: 1px solid #1a2040;
+  background-color: #2A0010;
+  border: 1px solid #4A001A;
   border-radius: 16px;
   padding: 20px;
   height: 220px;
@@ -137,14 +137,14 @@ button:active:not(:disabled) {
 .skeleton {
   position: relative;
   overflow: hidden;
-  background: #1a2040;
+  background: #3A0015;
   border-radius: 8px;
 }
 .skeleton::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(35, 45, 82, 0.7) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(200, 144, 154, 0.2) 50%, transparent 100%);
   transform: translateX(-100%);
   animation: skeleton-shimmer 1.6s linear infinite;
 }
@@ -152,7 +152,7 @@ button:active:not(:disabled) {
 /* ── Scrollbar ────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #1a2040; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #2a3560; }
-.light-theme ::-webkit-scrollbar-thumb { background: #cbd5e1; }
-.light-theme ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar-thumb { background: #4A001A; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #7A1535; }
+.light-theme ::-webkit-scrollbar-thumb { background: #D4A0AA; }
+.light-theme ::-webkit-scrollbar-thumb:hover { background: #C8909A; }
