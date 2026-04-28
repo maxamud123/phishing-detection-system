@@ -210,6 +210,12 @@ export const SessionsAPI = {
   kill:   (id: string) => apiFetch(`/api/sessions/${id}`, 'DELETE'),
 };
 
+// ── Chat API ──────────────────────────────────────────────────────────────────
+export const ChatAPI = {
+  send: (messages: { role: 'user' | 'assistant'; content: string }[]) =>
+    apiFetch<{ reply: string }>('/api/chat', 'POST', { messages }),
+};
+
 // ── CSV export helper ─────────────────────────────────────────────────────────
 export function exportCSV(filename: string, rows: object[]) {
   if (!rows.length) return;
