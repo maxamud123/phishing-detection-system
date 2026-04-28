@@ -36,7 +36,7 @@ export function Login({ onLogin, onSignup }: LoginProps) {
 
   const inputStyle = (field: string): React.CSSProperties => ({
     backgroundColor: '#1E000A',
-    border: `1px solid ${focusedField === field ? 'rgba(240, 192, 200, 0.5)' : '#4A001A'}`,
+    border: `1px solid ${focusedField === field ? 'rgba(122, 154, 184, 0.5)' : '#4A001A'}`,
     borderRadius: '12px',
     color: 'white',
     fontSize: '14px',
@@ -44,7 +44,7 @@ export function Login({ onLogin, onSignup }: LoginProps) {
     width: '100%',
     padding: '11px 16px',
     transition: 'border-color 0.2s',
-    boxShadow: focusedField === field ? '0 0 0 3px rgba(240, 192, 200, 0.08)' : 'none',
+    boxShadow: focusedField === field ? '0 0 0 3px rgba(122, 154, 184, 0.08)' : 'none',
   });
 
   return (
@@ -54,7 +54,7 @@ export function Login({ onLogin, onSignup }: LoginProps) {
         backgroundColor: '#3A0015',
         fontFamily: "'Inter', sans-serif",
         backgroundImage:
-          'linear-gradient(rgba(240, 192, 200, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(240, 192, 200, 0.025) 1px, transparent 1px)',
+          'linear-gradient(rgba(122, 154, 184, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(122, 154, 184, 0.025) 1px, transparent 1px)',
         backgroundSize: '40px 40px',
       }}
     >
@@ -65,7 +65,7 @@ export function Login({ onLogin, onSignup }: LoginProps) {
           width: '600px',
           height: '600px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(240, 192, 200,0.06) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(122, 154, 184,0.06) 0%, transparent 70%)',
           top: '-100px',
           left: '-100px',
         }}
@@ -76,7 +76,7 @@ export function Login({ onLogin, onSignup }: LoginProps) {
           width: '400px',
           height: '400px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(200, 144, 154,0.05) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(90, 128, 168,0.05) 0%, transparent 70%)',
           bottom: '0px',
           right: '0px',
         }}
@@ -88,17 +88,17 @@ export function Login({ onLogin, onSignup }: LoginProps) {
           <div
             className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
             style={{
-              background: 'linear-gradient(135deg, rgba(240, 192, 200,0.15), rgba(240, 192, 200,0.3))',
-              border: '1px solid rgba(240, 192, 200, 0.4)',
-              boxShadow: '0 0 40px rgba(240, 192, 200, 0.25)',
+              background: 'linear-gradient(135deg, rgba(122, 154, 184,0.15), rgba(122, 154, 184,0.3))',
+              border: '1px solid rgba(122, 154, 184, 0.4)',
+              boxShadow: '0 0 40px rgba(122, 154, 184, 0.25)',
             }}
           >
-            <Shield className="w-8 h-8" style={{ color: '#F0C0C8' }} />
+            <Shield className="w-8 h-8" style={{ color: '#7A9AB8' }} />
           </div>
           <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'white', letterSpacing: '-0.02em' }}>
             Phish Guard
           </h1>
-          <p style={{ fontSize: '13px', color: '#8B4555', marginTop: '4px' }}>
+          <p style={{ fontSize: '13px', color: '#3A5A7A', marginTop: '4px' }}>
             Cyber Threat Detection Platform
           </p>
         </div>
@@ -109,23 +109,23 @@ export function Login({ onLogin, onSignup }: LoginProps) {
           style={{
             backgroundColor: '#2A0010',
             border: '1px solid #4A001A',
-            boxShadow: '0 0 60px rgba(0,0,0,0.5), 0 0 40px rgba(240, 192, 200,0.04)',
+            boxShadow: '0 0 60px rgba(0,0,0,0.5), 0 0 40px rgba(122, 154, 184,0.04)',
           }}
         >
           {/* Colored top border */}
           <div
             className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl"
-            style={{ background: 'linear-gradient(90deg, transparent, #F0C0C8, transparent)' }}
+            style={{ background: 'linear-gradient(90deg, transparent, #7A9AB8, transparent)' }}
           />
 
           <div className="flex items-start justify-between mb-6">
             <div>
               <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'white', marginBottom: '4px' }}>Sign In</h2>
-              <p style={{ fontSize: '13px', color: '#8B4555' }}>Access your security dashboard</p>
+              <p style={{ fontSize: '13px', color: '#3A5A7A' }}>Access your security dashboard</p>
             </div>
             {onSignup && (
               <button onClick={onSignup} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all hover:bg-white/5"
-                style={{ fontSize:'12px', color:'#F0C0C8', border:'1px solid rgba(240, 192, 200,0.2)', fontWeight:600 }}>
+                style={{ fontSize:'12px', color:'#7A9AB8', border:'1px solid rgba(122, 154, 184,0.2)', fontWeight:600 }}>
                 <UserPlus className="w-3.5 h-3.5" /> Sign Up
               </button>
             )}
@@ -149,7 +149,7 @@ export function Login({ onLogin, onSignup }: LoginProps) {
               <label
                 style={{
                   fontSize: '11px',
-                  color: '#C8909A',
+                  color: '#5A80A8',
                   display: 'block',
                   marginBottom: '8px',
                   textTransform: 'uppercase',
@@ -162,7 +162,7 @@ export function Login({ onLogin, onSignup }: LoginProps) {
               <div className="relative">
                 <Mail
                   className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-                  style={{ color: focusedField === 'email' ? '#F0C0C8' : '#8B4555' }}
+                  style={{ color: focusedField === 'email' ? '#7A9AB8' : '#3A5A7A' }}
                 />
                 <input
                   type="email"
@@ -181,7 +181,7 @@ export function Login({ onLogin, onSignup }: LoginProps) {
               <label
                 style={{
                   fontSize: '11px',
-                  color: '#C8909A',
+                  color: '#5A80A8',
                   display: 'block',
                   marginBottom: '8px',
                   textTransform: 'uppercase',
@@ -194,7 +194,7 @@ export function Login({ onLogin, onSignup }: LoginProps) {
               <div className="relative">
                 <Lock
                   className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-                  style={{ color: focusedField === 'password' ? '#F0C0C8' : '#8B4555' }}
+                  style={{ color: focusedField === 'password' ? '#7A9AB8' : '#3A5A7A' }}
                 />
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -210,7 +210,7 @@ export function Login({ onLogin, onSignup }: LoginProps) {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors"
-                  style={{ color: showPassword ? '#F0C0C8' : '#8B4555' }}
+                  style={{ color: showPassword ? '#7A9AB8' : '#3A5A7A' }}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -223,12 +223,12 @@ export function Login({ onLogin, onSignup }: LoginProps) {
               className="w-full py-3 rounded-xl transition-all duration-200 mt-2 relative overflow-hidden"
               style={{
                 background: isLoading
-                  ? 'rgba(240, 192, 200, 0.4)'
-                  : 'linear-gradient(135deg, #F0C0C8, #0099bb)',
+                  ? 'rgba(122, 154, 184, 0.4)'
+                  : 'linear-gradient(135deg, #7A9AB8, #0099bb)',
                 color: '#3A0015',
                 fontWeight: 700,
                 fontSize: '14px',
-                boxShadow: isLoading ? 'none' : '0 0 24px rgba(240, 192, 200, 0.3)',
+                boxShadow: isLoading ? 'none' : '0 0 24px rgba(122, 154, 184, 0.3)',
                 cursor: isLoading ? 'not-allowed' : 'pointer',
               }}
             >

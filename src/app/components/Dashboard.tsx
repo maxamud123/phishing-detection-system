@@ -100,7 +100,7 @@ export function Dashboard() {
   const totalReports  = reports.length;
 
   const statCards = [
-    { label: 'Total Scans',      value: loading ? '…' : totalScans.toLocaleString(),   icon: ScanLine,      color: '#F0C0C8', bg: 'rgba(240, 192, 200, 0.08)',  border: 'rgba(240, 192, 200, 0.3)',  glow: 'rgba(240, 192, 200, 0.15)'  },
+    { label: 'Total Scans',      value: loading ? '…' : totalScans.toLocaleString(),   icon: ScanLine,      color: '#7A9AB8', bg: 'rgba(122, 154, 184, 0.08)',  border: 'rgba(122, 154, 184, 0.3)',  glow: 'rgba(122, 154, 184, 0.15)'  },
     { label: 'Threats Detected', value: loading ? '…' : totalThreats.toLocaleString(), icon: AlertTriangle, color: '#ef4444', bg: 'rgba(239, 68, 68, 0.08)',  border: 'rgba(239, 68, 68, 0.3)',  glow: 'rgba(239, 68, 68, 0.15)'  },
     { label: 'Reports Filed',    value: loading ? '…' : totalReports.toLocaleString(), icon: FileText,      color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.08)', border: 'rgba(251, 191, 36, 0.3)', glow: 'rgba(251, 191, 36, 0.15)' },
     { label: 'Safe URLs',        value: loading ? '…' : safe.toLocaleString(),         icon: ShieldCheck,   color: '#22c55e', bg: 'rgba(34, 197, 94, 0.08)',  border: 'rgba(34, 197, 94, 0.3)',  glow: 'rgba(34, 197, 94, 0.15)'  },
@@ -110,7 +110,7 @@ export function Dashboard() {
 
   const total = dangerous + suspicious + safe || 1;
   const donutData = [
-    { name: 'Safe',       value: Math.round(safe       / total * 100), color: '#F0C0C8' },
+    { name: 'Safe',       value: Math.round(safe       / total * 100), color: '#7A9AB8' },
     { name: 'Suspicious', value: Math.round(suspicious / total * 100), color: '#fbbf24' },
     { name: 'Dangerous',  value: Math.round(dangerous  / total * 100), color: '#ef4444' },
   ].filter(d => d.value > 0);
@@ -172,7 +172,7 @@ export function Dashboard() {
                 </div>
               </div>
               <div style={{ fontSize: '28px', fontWeight: 700, color: 'white', lineHeight: 1 }}>{card.value}</div>
-              <div style={{ fontSize: '13px', color: '#C8909A', marginTop: '6px', fontWeight: 500 }}>{card.label}</div>
+              <div style={{ fontSize: '13px', color: '#5A80A8', marginTop: '6px', fontWeight: 500 }}>{card.label}</div>
             </div>
           );
         })}
@@ -185,20 +185,20 @@ export function Dashboard() {
           <div className="flex items-center justify-between mb-5">
             <div>
               <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white' }}>Weekly Scan Activity</h3>
-              <p style={{ fontSize: '12px', color: '#8B4555', marginTop: '2px' }}>Scans vs Threats detected</p>
+              <p style={{ fontSize: '12px', color: '#3A5A7A', marginTop: '2px' }}>Scans vs Threats detected</p>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#F0C0C8' }} /><span style={{ fontSize: '12px', color: '#C8909A' }}>Scans</span></div>
-              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#ef4444' }} /><span style={{ fontSize: '12px', color: '#C8909A' }}>Threats</span></div>
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#7A9AB8' }} /><span style={{ fontSize: '12px', color: '#5A80A8' }}>Scans</span></div>
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#ef4444' }} /><span style={{ fontSize: '12px', color: '#5A80A8' }}>Threats</span></div>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={weeklyData} barGap={4}>
               <CartesianGrid strokeDasharray="3 3" stroke="#4A001A" vertical={false} />
-              <XAxis dataKey="name" tick={{ fill: '#C8909A', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#C8909A', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(240, 192, 200, 0.04)' }} />
-              <Bar dataKey="scans"   fill="#F0C0C8" radius={[6, 6, 0, 0]} fillOpacity={0.85} />
+              <XAxis dataKey="name" tick={{ fill: '#5A80A8', fontSize: 12 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#5A80A8', fontSize: 12 }} axisLine={false} tickLine={false} />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(122, 154, 184, 0.04)' }} />
+              <Bar dataKey="scans"   fill="#7A9AB8" radius={[6, 6, 0, 0]} fillOpacity={0.85} />
               <Bar dataKey="threats" fill="#ef4444" radius={[6, 6, 0, 0]} fillOpacity={0.85} />
             </BarChart>
           </ResponsiveContainer>
@@ -208,7 +208,7 @@ export function Dashboard() {
         <div className="rounded-2xl p-5" style={cardStyle}>
           <div className="mb-3">
             <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white' }}>Threat Distribution</h3>
-            <p style={{ fontSize: '12px', color: '#8B4555', marginTop: '2px' }}>All-time classification</p>
+            <p style={{ fontSize: '12px', color: '#3A5A7A', marginTop: '2px' }}>All-time classification</p>
           </div>
           {donutData.length > 0 ? (
             <>
@@ -234,7 +234,7 @@ export function Dashboard() {
               </div>
             </>
           ) : (
-            <div className="flex items-center justify-center h-40" style={{ color: '#8B4555', fontSize: '13px' }}>
+            <div className="flex items-center justify-center h-40" style={{ color: '#3A5A7A', fontSize: '13px' }}>
               {loading ? 'Loading…' : 'No scan data yet'}
             </div>
           )}
@@ -246,14 +246,14 @@ export function Dashboard() {
         <div className="flex items-center justify-between mb-5">
           <div>
             <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'white' }}>Recent Activity</h3>
-            <p style={{ fontSize: '12px', color: '#8B4555', marginTop: '2px' }}>Latest scans and reports</p>
+            <p style={{ fontSize: '12px', color: '#3A5A7A', marginTop: '2px' }}>Latest scans and reports</p>
           </div>
         </div>
         <div className="space-y-2">
           {loading ? (
-            <p style={{ fontSize: '13px', color: '#8B4555', textAlign: 'center', padding: '24px 0' }}>Loading…</p>
+            <p style={{ fontSize: '13px', color: '#3A5A7A', textAlign: 'center', padding: '24px 0' }}>Loading…</p>
           ) : recentActivity.length === 0 ? (
-            <p style={{ fontSize: '13px', color: '#8B4555', textAlign: 'center', padding: '24px 0' }}>No activity yet. Run a scan to get started.</p>
+            <p style={{ fontSize: '13px', color: '#3A5A7A', textAlign: 'center', padding: '24px 0' }}>No activity yet. Run a scan to get started.</p>
           ) : recentActivity.map(activity => {
             const riskStyle = getRiskStyle(activity.riskLevel);
             return (
@@ -267,11 +267,11 @@ export function Dashboard() {
                     <p className="truncate" style={{ fontSize: '13px', color: '#e2e8f0', maxWidth: '300px' }}>
                       {activity.target}
                     </p>
-                    <p style={{ fontSize: '11px', color: '#8B4555', marginTop: '1px' }}>{activity.timestamp}</p>
+                    <p style={{ fontSize: '11px', color: '#3A5A7A', marginTop: '1px' }}>{activity.timestamp}</p>
                   </div>
                 </div>
                 <span className="shrink-0 ml-4 px-2.5 py-1 rounded-lg text-xs capitalize"
-                  style={{ color: activity.type === 'scan' ? '#F0C0C8' : '#C8909A', backgroundColor: activity.type === 'scan' ? 'rgba(240, 192, 200, 0.08)' : 'rgba(200, 144, 154, 0.08)', fontWeight: 500 }}>
+                  style={{ color: activity.type === 'scan' ? '#7A9AB8' : '#5A80A8', backgroundColor: activity.type === 'scan' ? 'rgba(122, 154, 184, 0.08)' : 'rgba(90, 128, 168, 0.08)', fontWeight: 500 }}>
                   {activity.type}
                 </span>
               </div>
