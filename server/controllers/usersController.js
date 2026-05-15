@@ -6,6 +6,7 @@ const { jsonOk, jsonError, parseBody, noDb } = require('../middleware/http');
 const { requireAuth } = require('../middleware/auth');
 const { hashPwd, genUserId } = require('../services/cryptoService');
 const { audit } = require('../services/auditService');
+const { validatePassword } = require('../utils/passwordPolicy');
 
 async function getUsers(req, res) {
   const db = getDb();
@@ -29,6 +30,8 @@ async function createUser(req, res) {
 
   const { name, email, password } = await parseBody(req);
   if (!name || !email || !password) return jsonError(res, 400, 'Name, email, and password required.');
+  const pwdCheck = validatePassword(password);
+  if (!pwdCheck.ok) return jsonError(res, 400, pwdCheck.error);
 
   const exists = await db.collection('users').findOne({ email: email.toLowerCase() });
   if (exists) return jsonError(res, 400, 'Email already in use.');
@@ -96,7 +99,8 @@ async function resetPassword(req, res, userId) {
   if (actor.role !== 'Admin') return jsonError(res, 403, 'Admin only.');
 
   const { password } = await parseBody(req);
-  if (!password || password.length < 6) return jsonError(res, 400, 'Password must be at least 6 characters.');
+  const pwdCheck = validatePassword(password);
+  if (!pwdCheck.ok) return jsonError(res, 400, pwdCheck.error);
 
   const salt         = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPwd(password, salt);

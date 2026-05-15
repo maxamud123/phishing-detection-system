@@ -35,4 +35,14 @@ module.exports = {
   SMTP_TO:           process.env.SMTP_ALERT_TO           || '',
   GROQ_API_KEY:      process.env.GROQ_API_KEY            || '',
   BODY_SIZE_LIMIT:   50_000,
+
+  // Phishing.Database community feed — https://github.com/Phishing-Database
+  PHISHING_DB_ENABLED:        process.env.PHISHING_DB_ENABLED !== 'false',
+  PHISHING_DB_DOMAINS_URL:    process.env.PHISHING_DB_DOMAINS_URL
+    || 'https://phish.co.za/latest/phishing-domains-ACTIVE.txt',
+  PHISHING_DB_LINKS_URL:      process.env.PHISHING_DB_LINKS_URL
+    || 'https://phish.co.za/latest/phishing-links-ACTIVE.txt',
+  PHISHING_DB_REFRESH_HOURS:  parseInt(process.env.PHISHING_DB_REFRESH_HOURS || '12', 10),
+  PHISHING_DB_CACHE_DIR:      process.env.PHISHING_DB_CACHE_DIR
+    || path.join(__dirname, 'data', 'phishing-db'),
 };

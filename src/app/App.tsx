@@ -1,43 +1,47 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo, Suspense, lazy } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import {
   Shield, LayoutDashboard, ScanLine, FileText, History, BarChart2,
   Settings, Menu, Bell, ChevronRight, Wifi, LogOut, BookOpen,
-  Search, Sun, Moon, X, AlertTriangle, CheckCircle, Info,
-  AlertCircle, Zap, Clock, ArrowRight,
+  Search, Sun, Moon, X, AlertTriangle, Info,
+  AlertCircle, Zap, Clock, ArrowRight, Loader2,
 } from 'lucide-react';
-import { Dashboard } from './components/Dashboard';
-import { Scanner } from './components/Scanner';
-import { Reports } from './components/Reports';
-import { Admin } from './components/Admin';
-import { ScanHistory } from './components/ScanHistory';
-import { Analytics } from './components/Analytics';
-import { KnowledgeBase } from './components/KnowledgeBase';
-import { Profile } from './components/Profile';
 import { Login } from './components/Login';
 import { Signup } from './components/Signup';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ChatBox } from './components/ChatBox';
-import { AuthAPI, getUser, getToken, clearSession } from './lib/api';
+import { AuthAPI, getUser, getToken, clearSession, ScansAPI, ReportsAPI } from './lib/api';
+import { useSystemHealth } from './hooks/useSystemHealth';
+import { useAppWebSocket, type AppNotification } from './hooks/useAppWebSocket';
+
+const Dashboard     = lazy(() => import('./components/Dashboard').then(m => ({ default: m.Dashboard })));
+const Scanner       = lazy(() => import('./components/Scanner').then(m => ({ default: m.Scanner })));
+const Reports       = lazy(() => import('./components/Reports').then(m => ({ default: m.Reports })));
+const Admin         = lazy(() => import('./components/Admin').then(m => ({ default: m.Admin })));
+const ScanHistory   = lazy(() => import('./components/ScanHistory').then(m => ({ default: m.ScanHistory })));
+const Analytics     = lazy(() => import('./components/Analytics').then(m => ({ default: m.Analytics })));
+const KnowledgeBase = lazy(() => import('./components/KnowledgeBase').then(m => ({ default: m.KnowledgeBase })));
+const Profile       = lazy(() => import('./components/Profile').then(m => ({ default: m.Profile })));
+
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center h-48 gap-2" style={{ color: '#6b7f9e' }}>
+      <Loader2 className="w-5 h-5 animate-spin" />
+      <span style={{ fontSize: '13px' }}>Loading…</span>
+    </div>
+  );
+}
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
 type Tab = 'dashboard' | 'scanner' | 'reports' | 'scanhistory' | 'analytics' | 'knowledgebase' | 'admin' | 'profile';
 type Theme = 'dark' | 'light';
 
-interface AppNotification {
-  id: string;
-  type: 'threat' | 'report' | 'system' | 'info';
-  title: string;
-  body: string;
-  time: string;
-  read: boolean;
-}
-
 interface SearchResult {
   type: 'page' | 'scan' | 'report';
   label: string;
   sub: string;
-  icon: any;
+  icon: LucideIcon;
   action: () => void;
   badge?: { text: string; color: string; bg: string };
 }
@@ -159,7 +163,13 @@ export default function App() {
 
   // Notifications
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
+  const [remoteSearch, setRemoteSearch] = useState<SearchResult[]>([]);
   const [notifOpen, setNotifOpen] = useState(false);
+  const { health } = useSystemHealth(isLoggedIn);
+
+  useAppWebSocket(isLoggedIn, (n) => {
+    setNotifications(ns => [n, ...ns].slice(0, 50));
+  });
   const notifRef = useRef<HTMLDivElement>(null);
   useClickOutside(notifRef, () => setNotifOpen(false));
   const unread = notifications.filter(n => !n.read).length;
@@ -181,13 +191,68 @@ export default function App() {
     setSidebarOpen(false);
   }, []);
 
-  // Build search results
-  const searchResults: SearchResult[] = (() => {
+  const t = tokens[theme];
+  const navItems = allNavItems.filter(item => item.roles.includes(currentUser?.role || ''));
+
+  // Fetch scans & reports for global search
+  useEffect(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (q.length < 2 || !isLoggedIn) {
+      setRemoteSearch([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      const results: SearchResult[] = [];
+      const [scansRes, reportsRes] = await Promise.all([
+        ScansAPI.getAll(1, 30),
+        ReportsAPI.getAll(1, 30),
+      ]);
+      if (scansRes.success && scansRes.data) {
+        for (const s of scansRes.data) {
+          const hay = `${s.target} ${s.result} ${s.type}`.toLowerCase();
+          if (!hay.includes(q)) continue;
+          const danger = s.result === 'Dangerous';
+          results.push({
+            type: 'scan',
+            label: s.target,
+            sub: `${s.result} · risk ${s.riskScore}`,
+            icon: ScanLine,
+            action: () => navigate('scanhistory'),
+            badge: {
+              text: s.result,
+              color: danger ? '#ef4444' : '#22c55e',
+              bg: danger ? 'rgba(239,68,68,0.15)' : 'rgba(34,197,94,0.15)',
+            },
+          });
+        }
+      }
+      if (reportsRes.success && reportsRes.data) {
+        for (const r of reportsRes.data) {
+          const hay = `${r.target} ${r.type} ${r.status} ${r.reporter}`.toLowerCase();
+          if (!hay.includes(q)) continue;
+          results.push({
+            type: 'report',
+            label: r.target,
+            sub: `${r.type} · ${r.status}`,
+            icon: FileText,
+            action: () => navigate('reports'),
+            badge: {
+              text: r.status,
+              color: '#a78bfa',
+              bg: 'rgba(167,139,250,0.15)',
+            },
+          });
+        }
+      }
+      setRemoteSearch(results.slice(0, 6));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, isLoggedIn, navigate]);
+
+  const searchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return [];
     const results: SearchResult[] = [];
-
-    // Pages
     navItems.forEach(item => {
       if (item.label.toLowerCase().includes(q)) {
         results.push({
@@ -196,9 +261,8 @@ export default function App() {
         });
       }
     });
-
-    return results.slice(0, 8);
-  })();
+    return [...results, ...remoteSearch].slice(0, 10);
+  }, [searchQuery, navItems, remoteSearch, navigate]);
 
   // Keyboard shortcut: Ctrl+K / Cmd+K to open search
   useEffect(() => {
@@ -213,9 +277,6 @@ export default function App() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
-
-  const t = tokens[theme];
-  const navItems = allNavItems.filter(item => item.roles.includes(currentUser?.role || ''));
 
   if (!isLoggedIn) {
     if (showSignup) {
@@ -309,16 +370,25 @@ export default function App() {
                 style={{ backgroundColor: '#00ff80', boxShadow: '0 0 6px #00ff80' }} />
             </div>
             <div>
-              <div style={{ fontSize: '12px', fontWeight: 600, color: '#00c060' }}>System Online</div>
-              <div style={{ fontSize: '10px', color: t.titleSub }}>All services active</div>
+              <div style={{
+                fontSize: '12px', fontWeight: 600,
+                color: health.api && health.db ? '#00c060' : health.api ? '#f59e0b' : '#ef4444',
+              }}>
+                {health.api && health.db ? 'System Online' : health.api ? 'Degraded' : 'API Offline'}
+              </div>
+              <div style={{ fontSize: '10px', color: t.titleSub }}>
+                {health.api ? 'Live health check' : 'Start backend on port 3001'}
+              </div>
             </div>
             <div className="ml-auto flex flex-col items-end gap-0.5">
               <div className="flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#22c55e' }} />
+                <div className="w-1.5 h-1.5 rounded-full"
+                  style={{ backgroundColor: health.api ? '#22c55e' : '#ef4444' }} />
                 <span style={{ fontSize: '9px', color: t.titleSub }}>API</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#22c55e' }} />
+                <div className="w-1.5 h-1.5 rounded-full"
+                  style={{ backgroundColor: health.db ? '#22c55e' : '#ef4444' }} />
                 <span style={{ fontSize: '9px', color: t.titleSub }}>DB</span>
               </div>
             </div>
@@ -336,7 +406,7 @@ export default function App() {
         >
           {/* Mobile menu */}
           <button className="lg:hidden p-2 rounded-xl" style={{ color: t.navInactive }}
-            onClick={() => setSidebarOpen(true)}>
+            onClick={() => setSidebarOpen(true)} aria-label="Open navigation menu">
             <Menu className="w-5 h-5" />
           </button>
 
@@ -633,16 +703,18 @@ export default function App() {
           }}
         >
           <ErrorBoundary>
-            {activeTab === 'dashboard'     && <Dashboard />}
-            {activeTab === 'scanner'       && <Scanner />}
-            {activeTab === 'reports'       && <Reports />}
-            {activeTab === 'scanhistory'   && <ScanHistory />}
-            {activeTab === 'analytics'     && <Analytics />}
-            {activeTab === 'knowledgebase' && <KnowledgeBase />}
-            {activeTab === 'profile'       && <Profile />}
-            {activeTab === 'admin' && (
-              currentUser?.role === 'Admin' ? <Admin /> : <AccessDenied />
-            )}
+            <Suspense fallback={<PageLoader />}>
+              {activeTab === 'dashboard'     && <Dashboard />}
+              {activeTab === 'scanner'       && <Scanner />}
+              {activeTab === 'reports'       && <Reports />}
+              {activeTab === 'scanhistory'   && <ScanHistory />}
+              {activeTab === 'analytics'     && <Analytics />}
+              {activeTab === 'knowledgebase' && <KnowledgeBase />}
+              {activeTab === 'profile'       && <Profile />}
+              {activeTab === 'admin' && (
+                currentUser?.role === 'Admin' ? <Admin /> : <AccessDenied />
+              )}
+            </Suspense>
           </ErrorBoundary>
         </main>
       </div>

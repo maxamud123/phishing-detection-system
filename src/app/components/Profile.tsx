@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { User, Mail, Lock, CheckCircle, AlertCircle, Eye, EyeOff, Shield } from 'lucide-react';
 import { AuthAPI, setUser, getUser } from '../lib/api';
+import { validatePassword } from '../lib/passwordPolicy';
 
 export function Profile() {
   const currentUser = getUser();
@@ -54,7 +55,8 @@ export function Profile() {
     e.preventDefault();
     setPwdMsg(''); setPwdErr('');
     if (newPwd !== confirmPwd) { setPwdErr('Passwords do not match.'); return; }
-    if (newPwd.length < 6)    { setPwdErr('Password must be at least 6 characters.'); return; }
+    const pwdErr = validatePassword(newPwd);
+    if (pwdErr) { setPwdErr(pwdErr); return; }
     setPwdSaving(true);
     try {
       const res = await AuthAPI.changePassword(currentPwd, newPwd);

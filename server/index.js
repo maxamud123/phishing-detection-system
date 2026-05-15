@@ -17,8 +17,9 @@
 const http = require('http');
 const { PORT, CORS_ORIGIN, VIRUSTOTAL_KEY, SAFE_BROWSING_KEY, SMTP_USER, SMTP_TO, DB_NAME } = require('./config');
 const { connectDB, getDb } = require('./db/connection');
+const { initPhishingDatabase, getStatus: getPhishingDbStatus } = require('./services/phishingDatabaseService');
 const { route } = require('./routes/router');
-const { initWebSocket } = require('./services/websocketService');
+const { initWebSocket, isWebSocketActive } = require('./services/websocketService');
 const { isEmailConfigured } = require('./services/emailService');
 
 const server = http.createServer((req, res) => {
@@ -35,9 +36,11 @@ const server = http.createServer((req, res) => {
 
 (async () => {
   await connectDB();
+  await initPhishingDatabase();
 
   server.listen(PORT, () => {
-    const wsActive = initWebSocket(server);
+    initWebSocket(server);
+    const wsActive = isWebSocketActive();
 
     if (wsActive) {
       console.log(`  ✅ WebSocket server active  (ws://localhost:${PORT})`);
@@ -66,6 +69,8 @@ const server = http.createServer((req, res) => {
     console.log(`  │  GET   /api/audit-logs       /api/db-stats           │`);
     console.log(`  │  VirusTotal:     ${VIRUSTOTAL_KEY    ? '✅ key loaded' : '⚠️  no key (optional)'}                │`);
     console.log(`  │  Safe Browsing:  ${SAFE_BROWSING_KEY ? '✅ key loaded' : '⚠️  no key (optional)'}                │`);
+    const pdb = getPhishingDbStatus();
+    console.log(`  │  Phishing.DB:    ${pdb.loaded ? `✅ ${pdb.domainCount.toLocaleString()} domains` : pdb.enabled ? '⏳ loading…' : '⚠️  disabled'}           │`);
     console.log(`  └──────────────────────────────────────────────────────┘\n`);
     console.log(`  Frontend (Vite): run  npm run dev  in the root folder\n`);
   });

@@ -63,6 +63,9 @@ async function seedDefaultData() {
   }
   await col.updateOne({ email: ADMIN_EMAIL.toLowerCase() }, { $set: { role: 'Admin' } });
   console.log(`  ✅ Admin account ready  →  ${ADMIN_EMAIL}`);
+  if (ADMIN_PASSWORD === 'Admin@1234') {
+    console.warn('  ⚠️  Using default ADMIN_PASSWORD — change it in server/.env before deploying!\n');
+  }
 }
 
 module.exports = { connectDB, getDb, getObjectId };

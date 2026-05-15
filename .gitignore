@@ -8,6 +8,7 @@ build/
 
 # Environment files — never commit secrets
 .env
+.env.local
 server/.env
 *.env.local
 *.env.production
@@ -27,3 +28,6 @@ Thumbs.db
 
 # Vite cache
 .vite/
+
+# Phishing.Database downloaded feeds (large; re-fetched on startup)
+server/data/

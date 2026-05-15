@@ -6,10 +6,14 @@ const reports = require('../controllers/reportsController');
 const scans   = require('../controllers/scansController');
 const admin   = require('../controllers/adminController');
 const chat    = require('../controllers/chatController');
+const health  = require('../controllers/healthController');
 
 function route(req, res) {
   const url    = req.url.split('?')[0];
   const method = req.method;
+
+  // ── Health (public) ───────────────────────────────────────────────────────
+  if (url === '/api/health' && method === 'GET') return health.health(req, res);
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   if (url === '/api/auth/login'       && method === 'POST') return auth.login(req, res);

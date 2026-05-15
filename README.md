@@ -11,7 +11,7 @@ A full-stack phishing URL detection platform with real-time threat analysis, rol
 | Backend | Node.js (no framework) |
 | Database | MongoDB |
 | Real-time | WebSocket |
-| Detection | Heuristics, Typosquatting, RDAP, VirusTotal, Google Safe Browsing |
+| Detection | Heuristics, Typosquatting, RDAP, [Phishing.Database](https://github.com/Phishing-Database), VirusTotal, Google Safe Browsing |
 
 ## Roles
 
@@ -24,90 +24,94 @@ A full-stack phishing URL detection platform with real-time threat analysis, rol
 
 ## Prerequisites
 
-Install these before starting:
-
 - [Git](https://git-scm.com/downloads)
-- [Node.js v18+](https://nodejs.org) — download the LTS version
-- [MongoDB Community](https://www.mongodb.com/try/download/community) — make sure it is running
+- [Node.js v18+](https://nodejs.org) (LTS)
+- [MongoDB Community](https://www.mongodb.com/try/download/community) — running locally
 
 ---
 
 ## Setup
 
-### 1. Clone the repository
+### 1. Clone and install
 
-```
+```bash
 git clone https://github.com/maxamud123/phishing-detection-system.git
 cd phishing-detection-system
-```
-
-### 2. Install frontend dependencies
-
-```
 npm install
+cd server && npm install && cd ..
 ```
 
-### 3. Install backend dependencies
+### 2. Environment files
 
-```
-cd server
-npm install
-cd ..
-```
+**Backend** — copy and edit `server/.env`:
 
-### 4. Configure environment variables
-
-**Windows (Command Prompt):**
-```
+```bash
 copy server\.env.example server\.env
 ```
 
-**Mac / Linux:**
-```
-cp server/.env.example server/.env
-```
+**Frontend** (optional) — copy `.env.example` to `.env` in the project root if you need a custom WebSocket URL.
 
-Open `server/.env` in any text editor. MongoDB must be running — all other values are optional.
+Required for local dev:
+- `MONGODB_URI` — MongoDB connection string
+- `ADMIN_EMAIL` / `ADMIN_PASSWORD` — seeded admin (use a **strong** password before deploying)
 
-### 5. Run the backend
+Optional:
+- `GROQ_API_KEY` — AI chat ([Groq Console](https://console.groq.com))
+- `VIRUSTOTAL_API_KEY`, `GOOGLE_SAFE_BROWSING_KEY` — deeper scanning
+- `SMTP_*` — email threat alerts
 
-Open a terminal, go into the server folder, and start it:
+**Phishing.Database** (on by default): on backend startup the server downloads active phishing domains and links from [phish.co.za](https://phish.co.za/latest/) ([GitHub org](https://github.com/Phishing-Database)) and caches them under `server/data/`. Scans check this blocklist automatically — no API key required. Set `PHISHING_DB_ENABLED=false` to disable.
 
-```
+### 3. Run the backend
+
+```bash
 cd server
 node index.js
 ```
 
-Backend runs on `http://localhost:3001`
+API + WebSocket: `http://localhost:3001`
 
-### 6. Run the frontend
+### 4. Run the frontend
 
-Open a **second terminal** in the project root and run:
+In a **second terminal** at the project root:
 
-```
+```bash
 npm run dev
 ```
 
-Frontend runs on `http://localhost:5173`
+App: `http://localhost:5173`
 
 ---
 
 ## First-Time Login
 
-On first run the database is empty. Open `http://localhost:5173` and click **Create Account**.
+On startup the backend seeds an **Admin** account from `server/.env` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`).
 
-The **first account** created is automatically assigned the **Admin** role. All accounts after that register as User by default.
+**Default credentials** (if you have not changed `server/.env`):
+
+| Field | Value |
+|-------|--------|
+| Email | `admin@phishguard.local` |
+| Password | `Admin@1234` |
+
+If you copied `server/.env.example` and set a new `ADMIN_PASSWORD`, use that value instead — the database keeps the password from when the admin was first created.
+
+Sign in at `http://localhost:5173`, or use **Create Account** to register as a **User** (admins can promote users in the Admin panel).
+
+**Password policy:** at least 8 characters with uppercase, lowercase, and a number.
 
 ---
 
-## API Keys (Optional)
+## Scripts
 
-The system works without API keys using built-in heuristic detection. To enable deeper scanning:
-
-- **VirusTotal** — free key at [virustotal.com](https://www.virustotal.com/gui/my-apikey)
-- **Google Safe Browsing** — enable the API in [Google Cloud Console](https://console.cloud.google.com)
-
-Add both to `server/.env`.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start Vite dev server |
+| `npm run build` | Production build |
+| `npm run typecheck` | TypeScript check |
+| `npm run lint` | ESLint (frontend) |
+| `npm test` | Vitest unit tests |
+| `npm run test:server` | Node test runner (backend) |
 
 ---
 
@@ -118,12 +122,13 @@ phishing-detection-system/
 ├── src/                    # React frontend
 │   ├── app/
 │   │   ├── components/     # Dashboard, Scanner, Reports, Analytics, Admin
-│   │   ├── lib/            # API client, WebSocket, utilities
-│   │   └── App.tsx         # Root component + routing
-│   └── styles/             # Global CSS + Tailwind
+│   │   ├── hooks/          # Health polling, WebSocket notifications
+│   │   ├── lib/            # API client, env, password policy
+│   │   └── App.tsx
+│   └── styles/
 ├── server/
-│   ├── index.js            # Backend — HTTP server, auth, all API routes
-│   └── .env.example        # Environment variable template
-├── public/
+│   ├── index.js            # HTTP server + routes
+│   ├── controllers/        # Auth, scans, health, chat, …
+│   └── .env.example
 └── package.json
 ```

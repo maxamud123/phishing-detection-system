@@ -12,12 +12,13 @@ setInterval(() => {
   for (const [ip, e] of loginAttempts) if (e.resetAt <= now) loginAttempts.delete(ip);
 }, 30 * 60 * 1000);
 
-function checkRateLimit(ip) {
+function checkRateLimit(ip, bucket = 'login') {
+  const key = `${bucket}:${ip}`;
   const now = Date.now();
-  let entry = loginAttempts.get(ip);
+  let entry = loginAttempts.get(key);
   if (!entry || entry.resetAt <= now) {
     entry = { count: 1, resetAt: now + RATE_WINDOW_MS };
-    loginAttempts.set(ip, entry);
+    loginAttempts.set(key, entry);
     return true;
   }
   if (entry.count >= MAX_ATTEMPTS) return false;

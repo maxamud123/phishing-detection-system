@@ -198,10 +198,38 @@ export const ScansAPI = {
     apiFetch<{ results: (AnalysisResult & { target: string; scanId: string; error?: string })[]; total: number }>('/api/scan/bulk', 'POST', { targets, type }),
 };
 
+// ── Health API (public) ───────────────────────────────────────────────────────
+export interface HealthStatus {
+  status: 'ok' | 'degraded';
+  api: boolean;
+  db: boolean;
+  dbName: string;
+  websocket: boolean;
+  email: boolean;
+  virusTotal: boolean;
+  safeBrowsing: boolean;
+  chat: boolean;
+  timestamp: string;
+}
+
+export const HealthAPI = {
+  check: () => apiFetch<HealthStatus>('/api/health'),
+};
+
 // ── Admin API ─────────────────────────────────────────────────────────────────
 export const AdminAPI = {
   auditLogs: () => apiFetch<{ data: AuditLog[] }>('/api/audit-logs'),
-  dbStats:   () => apiFetch<{ connected: boolean; dbName: string; collections: Record<string, number> }>('/api/db-stats'),
+  dbStats:   () => apiFetch<{
+    connected: boolean;
+    dbName: string;
+    collections: {
+      users: number;
+      reports: number;
+      scans: number;
+      audit_logs: number;
+      activeSessions: number;
+    };
+  }>('/api/db-stats'),
 };
 
 // ── Sessions API ──────────────────────────────────────────────────────────────

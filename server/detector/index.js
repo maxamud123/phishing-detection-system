@@ -6,12 +6,14 @@ const { checkDomainAge }          = require('./layers/domainAge');
 const { checkGoogleSafeBrowsing } = require('./layers/safeBrowsing');
 const { checkVirusTotal }         = require('./layers/virusTotal');
 const { analyzeEmailBackend }     = require('./layers/emailAnalyzer');
+const { checkPhishingDatabaseLayer } = require('./layers/phishingDatabase');
 
 async function analyzeTarget(target, type, apiKeys = {}) {
   if (type === 'Email') return analyzeEmailBackend(target);
 
   const layer1 = analyzeUrlLocal(target);
   const domain = extractDomain(target);
+  const pdb      = checkPhishingDatabaseLayer(target, domain);
 
   const [domainAge, gsbResult, vtResult] = await Promise.allSettled([
     checkDomainAge(domain),
@@ -74,6 +76,40 @@ async function analyzeTarget(target, type, apiKeys = {}) {
     }
   } else {
     externalChecks.push({ source: 'VirusTotal', result: 'N/A', detail: apiKeys.virusTotal ? 'API error' : 'No API key configured — add VIRUSTOTAL_API_KEY to .env' });
+  }
+
+  // Phishing.Database (community blocklist)
+  if (pdb.listed) {
+    externalAdjustment += 45;
+    factors.push({
+      layer: 'Phishing.Database',
+      label: pdb.matchType === 'url' ? 'Listed Phishing URL' : 'Listed Phishing Domain',
+      impact: +45,
+      severity: 'danger',
+      description: pdb.detail,
+    });
+    externalChecks.push({
+      source: 'Phishing.Database',
+      result: 'THREAT',
+      detail: pdb.detail,
+      link:   'https://github.com/Phishing-Database',
+    });
+  } else if (pdb.loaded) {
+    externalChecks.push({
+      source: 'Phishing.Database',
+      result: 'CLEAN',
+      detail: `Not in active feed (${pdb.counts.domains.toLocaleString()} domains, ${pdb.counts.links.toLocaleString()} links indexed)`,
+      link:   'https://github.com/Phishing-Database',
+    });
+  } else {
+    externalChecks.push({
+      source: 'Phishing.Database',
+      result: 'N/A',
+      detail: pdb.enabled
+        ? (pdb.detail || 'Feed loading — restart backend or wait for download')
+        : 'Disabled — set PHISHING_DB_ENABLED=true in server/.env',
+      link: 'https://github.com/Phishing-Database',
+    });
   }
 
   const finalScore  = Math.max(0, Math.min(100, layer1.score + externalAdjustment));

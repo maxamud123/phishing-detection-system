@@ -11,10 +11,14 @@ function initWebSocket(server) {
   return true;
 }
 
+function isWebSocketActive() {
+  return !!wss;
+}
+
 function broadcastAlert(payload) {
   if (!wss) return;
   const msg = JSON.stringify(payload);
   wss.clients.forEach(client => { if (client.readyState === 1) client.send(msg); });
 }
 
-module.exports = { initWebSocket, broadcastAlert };
+module.exports = { initWebSocket, broadcastAlert, isWebSocketActive };

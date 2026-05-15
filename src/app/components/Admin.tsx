@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Users, FileText, Activity, Shield, Plus, Trash2, X, Check, Database, Cpu, Clock, HardDrive, ScrollText, RefreshCw, Lock, PowerOff, Power, WifiOff, Monitor } from 'lucide-react';
 import { UsersAPI, AdminAPI, SessionsAPI, User, AuditLog, ActiveSession } from '../lib/api';
 import { cardStyle, inputStyle } from '../lib/styles';
+import { validatePassword, MIN_PASSWORD_LENGTH } from '../lib/passwordPolicy';
 
 const permissions = [
   { label: 'View Dashboard',     admin: true,  user: true  },
@@ -16,7 +17,13 @@ const permissions = [
 
 interface DbStats {
   connected: boolean;
-  collections: { users: number; reports: number; scans: number; audit_logs: number };
+  collections: {
+    users: number;
+    reports: number;
+    scans: number;
+    audit_logs: number;
+    activeSessions: number;
+  };
 }
 
 type AdminSection = 'users' | 'audit' | 'monitoring' | 'sessions';
@@ -71,7 +78,8 @@ export function Admin() {
     e.preventDefault();
     if (!resetTarget) return;
     setResetErr('');
-    if (resetPwd.length < 6) { setResetErr('Password must be at least 6 characters.'); return; }
+    const pwdErr = validatePassword(resetPwd);
+    if (pwdErr) { setResetErr(pwdErr); return; }
     setResetSaving(true);
     try {
       const res = await UsersAPI.resetPassword(resetTarget.userId, resetPwd);
@@ -114,7 +122,7 @@ export function Admin() {
       ]);
       if (usersRes.success) setUsers(usersRes.data);
       else setError(usersRes.error || 'Failed to load users.');
-      if (statsRes.success) setDbStats(statsRes as DbStats);
+      if (statsRes.success && statsRes.collections) setDbStats(statsRes);
     } catch {
       setError('Cannot connect to server. Is the backend running?');
     } finally {
@@ -134,6 +142,8 @@ export function Admin() {
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
+    const pwdErr = validatePassword(formPassword);
+    if (pwdErr) { setFormError(pwdErr); return; }
     setSubmitting(true);
     try {
       const data = await UsersAPI.create({
@@ -602,7 +612,7 @@ export function Admin() {
               </div>
               <div>
                 <label style={{ fontSize: '12px', color: '#5A80A8', display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Password</label>
-                <input type="password" value={formPassword} onChange={e => setFormPassword(e.target.value)} placeholder="Min 6 characters" style={{ ...inputStyle, width: '100%' }} required minLength={6} />
+                <input type="password" value={formPassword} onChange={e => setFormPassword(e.target.value)} placeholder={`Min ${MIN_PASSWORD_LENGTH} chars, upper, lower, number`} style={{ ...inputStyle, width: '100%' }} required minLength={MIN_PASSWORD_LENGTH} />
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={submitting} className="flex-1 py-3 rounded-xl hover:opacity-90 transition-all admin-modal-btn-primary"

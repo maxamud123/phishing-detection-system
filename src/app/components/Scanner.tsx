@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ScansAPI, AnalysisResult, ThreatFactor, ExternalCheck } from '../lib/api';
+import { WS_URL } from '../lib/env';
 import { Link, Mail, Search, AlertCircle, CheckCircle, AlertTriangle, Shield, Globe, Lock, FileWarning, Eye, Layers, Upload, Download, Zap, ExternalLink } from 'lucide-react';
 
 interface ScanDetail {
@@ -417,7 +418,7 @@ export function Scanner() {
 
   useEffect(() => {
     try {
-      const ws = new WebSocket(`ws://localhost:3001`);
+      const ws = new WebSocket(WS_URL);
       wsRef.current = ws;
       ws.onmessage = (evt) => {
         try {

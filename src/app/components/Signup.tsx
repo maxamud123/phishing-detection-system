@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Shield, User, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import { AuthAPI } from '../lib/api';
+import { validatePassword, MIN_PASSWORD_LENGTH } from '../lib/passwordPolicy';
 
 interface SignupProps {
   onSuccess: () => void;
@@ -22,7 +23,7 @@ export function Signup({ onSuccess, onBackToLogin, isAdminCreating = false }: Si
     const p = form.password;
     if (!p) return 0;
     let s = 0;
-    if (p.length >= 8)          s++;
+    if (p.length >= MIN_PASSWORD_LENGTH) s++;
     if (/[A-Z]/.test(p))        s++;
     if (/[0-9]/.test(p))        s++;
     if (/[^A-Za-z0-9]/.test(p)) s++;
@@ -44,7 +45,8 @@ export function Signup({ onSuccess, onBackToLogin, isAdminCreating = false }: Si
     setError(''); setSuccess('');
     if (!form.name.trim()) return setError('Full name is required.');
     if (form.password !== form.confirmPassword) return setError('Passwords do not match.');
-    if (form.password.length < 6) return setError('Password must be at least 6 characters.');
+    const pwdErr = validatePassword(form.password);
+    if (pwdErr) return setError(pwdErr);
 
     setLoading(true);
     try {
